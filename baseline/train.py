@@ -19,6 +19,8 @@ from ignite.contrib.handlers.tensorboard_logger import (
 )
 from ignite.engine import Events, create_supervised_trainer, create_supervised_evaluator
 from ignite.metrics import Accuracy, Loss
+import torchvision
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 
 from sklearn.model_selection import KFold
 
@@ -26,11 +28,39 @@ import torchvision
 from torchvision.models.detection import FasterRCNN
 from torchvision.models.detection.rpn import AnchorGenerator
 
+from dataset import XRayDataset
+
+import transforms as T
+
+def get_transform(train):
+    transforms = []
+    transforms.append(T.ToTensor())
+    if train:
+        transforms.append(T.RandomHorizontalFlip(0.5))
+    return T.Compose(transforms)
+
+
 def get_splits(args, patients):
     kfolds = KFold(n_splits=args.folds, shuffle=False)
     patients.sort()
     patients = np.array(patients)
     return patients, kfolds.split(patients)
+
+def get_model(args, device):
+  # load a model pre-trained on COCO
+  model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
+  # replace the classifier with a new one, that has
+  # num_classes which is user-defined
+  num_classes = 2  # 1 class (person) + background
+  # get number of input features for the classifier
+  in_features = model.roi_heads.box_predictor.cls_score.in_features
+  # replace the pre-trained head with a new one
+  model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+  
+  return model
+
+
+
 
 def train_fold(args, fold, train_patients, valid_patients, device):
     loader_train, loader_valid = data_loaders(args, train_patients, valid_patients)
