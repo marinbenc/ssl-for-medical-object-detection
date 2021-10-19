@@ -30,21 +30,23 @@ from torchvision.models.detection.rpn import AnchorGenerator
 
 from dataset import XRayDataset
 
-import transforms as T
+import torchvision.transforms as T
+
+def collate_fn(batch):
+    return tuple(zip(*batch))
 
 def get_transform(train):
     transforms = []
     transforms.append(T.ToTensor())
-    if train:
-        transforms.append(T.RandomHorizontalFlip(0.5))
+    # if train:
+    #     transforms.append(T.RandomHorizontalFlip(0.5))
     return T.Compose(transforms)
 
-
-def get_splits(args, patients):
-    kfolds = KFold(n_splits=args.folds, shuffle=False)
-    patients.sort()
-    patients = np.array(patients)
-    return patients, kfolds.split(patients)
+# def get_splits(args, patients):
+#     kfolds = KFold(n_splits=args.folds, shuffle=False)
+#     patients.sort()
+#     patients = np.array(patients)
+#     return patients, kfolds.split(patients)
 
 def get_model(args, device):
   # load a model pre-trained on COCO
@@ -59,17 +61,67 @@ def get_model(args, device):
   
   return model
 
+def data_loaders(args):
+    dataset_train, dataset_valid, dataset_test = datasets(args)
 
+    def worker_init(worker_id):
+        np.random.seed(42 + worker_id)
 
+    loader_train = DataLoader(
+        dataset_train,
+        batch_size=args.batch_size,
+        shuffle=True,
+        drop_last=True,
+        num_workers=args.workers,
+        worker_init_fn=worker_init,
+        collate_fn=collate_fn,
+    )
+    loader_valid = DataLoader(
+        dataset_valid,
+        batch_size=args.batch_size,
+        drop_last=False,
+        num_workers=args.workers,
+        worker_init_fn=worker_init,
+        collate_fn=collate_fn,
+    )
 
-def train_fold(args, fold, train_patients, valid_patients, device):
-    loader_train, loader_valid = data_loaders(args, train_patients, valid_patients)
+    return loader_train, loader_valid
+
+def datasets(args):
+    all_train = XRayDataset('train', transforms=get_transform(True))
+    indices = torch.randperm(len(all_train)).tolist()
+    split_index = int(0.75 * len(all_train))
+    train = torch.utils.data.Subset(all_train, indices[:split_index])
+    valid = torch.utils.data.Subset(all_train, indices[split_index:])
+
+    #test = XRayDataset('test', transforms=get_transform(False))
+    return train, valid, ''
+
+def main(args):
+    #makedirs(args)
+    #snapshotargs(args)
+    device = torch.device('cpu' if not torch.cuda.is_available() else 'cuda')
+
+    loader_train, loader_valid = data_loaders(args)
 
     model = get_model(args, device)
     model.to(device)
 
+    images,targets = next(iter(loader_train))
+    images = list(image.to(device) for image in images)
+    targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+    output = model(images,targets)   # Returns losses and detections
+    # For inference
+    model.eval()
+    x = [torch.rand(3, 512, 512).to(device), torch.rand(3, 512, 512).to(device)]
+    predictions = model(x)           # Returns predictions
+    print(predictions)
+    print(output)
+
+
+    return
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    criterion = 
+    # criterion =
 
     metrics = {
       'dsc': DiceMetric(device=device),
@@ -146,6 +198,7 @@ def train_fold(args, fold, train_patients, valid_patients, device):
     tb_logger.close()
 
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='Training'
@@ -170,12 +223,6 @@ if __name__ == '__main__':
     )
     parser.add_argument(
         '--logs', type=str, default='./logs', help='folder to save logs'
-    )
-    parser.add_argument(
-        '--folds',
-        type=int,
-        default=4,
-        help='k in k-folds cross-validation',
     )
     parser.add_argument(
         '--workers',

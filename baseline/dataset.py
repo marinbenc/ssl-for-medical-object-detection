@@ -13,12 +13,14 @@ class XRayDataset(torch.utils.data.Dataset):
         self.transforms = transforms
         self.img_size = img_size
 
-        df = pd.read_csv(f'vinbigdata/{root}.csv')
+        df = pd.read_csv(f'../vinbigdata/{root}.csv')
         # class ID 0 = aortic enlargement, remove all other annotations
         df = df[df.class_id == 0]
-        df['image_path'] = f'vinbigdata/{root}/'+df.image_id+'.png'
-        df = self.normalize_bboxes(df)
+        df['image_path'] = f'../vinbigdata/{root}/'+df.image_id+'.png'
+        df = XRayDataset.normalize_bboxes(df)
+        self.df = df
 
+    @staticmethod
     def normalize_bboxes(df):
       df['x_min'] = df.apply(lambda row: (row.x_min)/row.width, axis =1)
       df['y_min'] = df.apply(lambda row: (row.y_min)/row.height, axis =1)
@@ -68,9 +70,9 @@ class XRayDataset(torch.utils.data.Dataset):
       target["iscrowd"] = iscrowd
 
       if self.transforms is not None:
-          img, target = self.transforms(img, target)
+          img = self.transforms(img)
 
       return img, target
 
     def __len__(self):
-      return self.df.size
+      return len(self.df.index)
