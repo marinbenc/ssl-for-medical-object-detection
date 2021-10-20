@@ -4,6 +4,7 @@ import os
 import sys
 import datetime
 from pprint import pprint
+import time
 
 import numpy as np
 import torch
@@ -30,7 +31,12 @@ from torchvision.models.detection.rpn import AnchorGenerator
 
 from dataset import XRayDataset
 
-import torchvision.transforms as T
+import transforms as T
+
+from coco_utils import get_coco_api_from_dataset
+from coco_eval import CocoEvaluator
+
+from torch.utils.tensorboard import SummaryWriter
 
 def collate_fn(batch):
     return tuple(zip(*batch))
@@ -97,9 +103,7 @@ def datasets(args):
     #test = XRayDataset('test', transforms=get_transform(False))
     return train, valid, ''
 
-def main(args):
-    #makedirs(args)
-    #snapshotargs(args)
+def check_pipeline():
     device = torch.device('cpu' if not torch.cuda.is_available() else 'cuda')
 
     loader_train, loader_valid = data_loaders(args)
@@ -118,85 +122,109 @@ def main(args):
     print(predictions)
     print(output)
 
+def warmup_lr_scheduler(optimizer, warmup_iters, warmup_factor):
+    def f(x):
+        if x >= warmup_iters:
+            return 1
+        alpha = float(x) / warmup_iters
+        return warmup_factor * (1 - alpha) + alpha
 
+    return torch.optim.lr_scheduler.LambdaLR(optimizer, f)
+
+def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, writer: SummaryWriter):
+    model.train()
+    lr_scheduler = None
+    if epoch == 0:
+        warmup_factor = 1. / 1000
+        warmup_iters = min(1000, len(data_loader) - 1)
+
+        lr_scheduler = warmup_lr_scheduler(optimizer, warmup_iters, warmup_factor)
+
+    for images, targets in data_loader:
+        images = list(image.to(device) for image in images)
+        targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+
+        loss_dict = model(images, targets)
+
+        losses = sum(loss for loss in loss_dict.values())
+
+        optimizer.zero_grad()
+        losses.backward()
+        optimizer.step()
+
+        if lr_scheduler is not None:
+            lr_scheduler.step()
+
+        break
+    
+    writer.add_scalar("Loss/train", losses, epoch)
+    
+@torch.no_grad()
+def evaluate(model, data_loader, device):
+    n_threads = torch.get_num_threads()
+    # FIXME remove this and make paste_masks_in_image run on the GPU
+    torch.set_num_threads(1)
+    cpu_device = torch.device("cpu")
+    model.eval()
+
+    coco = get_coco_api_from_dataset(data_loader.dataset)
+    iou_types = ["bbox"]
+    coco_evaluator = CocoEvaluator(coco, iou_types)
+
+    for image, targets in data_loader:
+        image = list(img.to(device) for img in image)
+        targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+
+        torch.cuda.synchronize()
+        model_time = time.time()
+        outputs = model(image)
+
+        outputs = [{k: v.to(cpu_device) for k, v in t.items()} for t in outputs]
+        model_time = time.time() - model_time
+
+        res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
+        coco_evaluator.update(res)
+
+    # gather the stats from all processes
+    coco_evaluator.synchronize_between_processes()
+
+    # accumulate predictions from all images
+    coco_evaluator.accumulate()
+    coco_evaluator.summarize()
+    torch.set_num_threads(n_threads)
+    return coco_evaluator
+
+def main(args):
+    device = torch.device('cpu' if not torch.cuda.is_available() else 'cuda')
+
+    loader_train, loader_valid = data_loaders(args)
+
+    model = get_model(args, device)
+    model.to(device)
+
+    params = [p for p in model.parameters() if p.requires_grad]
+    optimizer = torch.optim.SGD(params, lr=args.lr,
+                                momentum=0.9, weight_decay=0.0005)
+    # and a learning rate scheduler
+    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
+                                                   step_size=3,
+                                                   gamma=0.1)
+
+    num_epochs = args.epochs
+
+    writer = SummaryWriter()
+
+    for epoch in range(num_epochs):
+        # train for one epoch, printing every 10 iterations
+        train_one_epoch(model, optimizer, loader_train, device, epoch, 10, writer)
+        # update the learning rate
+        lr_scheduler.step()
+        # evaluate on the test dataset
+        #evaluate(model, loader_valid, device=device)
+
+    writer.flush()
+    writer.close()
     return
-    optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    # criterion =
-
-    metrics = {
-      'dsc': DiceMetric(device=device),
-      'loss': Loss(criterion)
-    }
-
-    trainer = create_supervised_trainer(model, optimizer, criterion, device=device)
-    trainer.logger = setup_logger('Trainer')
-
-    train_evaluator = create_supervised_evaluator(model, metrics=metrics, device=device)
-    train_evaluator.logger = setup_logger('Train Evaluator')
-    validation_evaluator = create_supervised_evaluator(model, metrics=metrics, device=device)
-    validation_evaluator.logger = setup_logger('Val Evaluator')
-
-    best_dsc = 0
-
-    @trainer.on(Events.GET_BATCH_COMPLETED(once=1))
-    def plot_batch(engine):
-        if fold != 0:
-            return
-
-        x, y = engine.state.batch
-        # show_images_row(
-        #     [x_i[0].detach().cpu().squeeze().numpy() for x_i in x] + 
-        #     [x_i[1].detach().cpu().squeeze().numpy() for x_i in x] + 
-        #     [y_i.detach().cpu().squeeze().numpy() for y_i in y], rows=3, vmin=0., vmax=1.)
-        # plt.show()
-
-    @trainer.on(Events.EPOCH_COMPLETED)
-    def compute_metrics(engine):
-        nonlocal best_dsc
-        train_evaluator.run(loader_train)
-        validation_evaluator.run(loader_valid)
-        curr_dsc = validation_evaluator.state.metrics['dsc']
-        if curr_dsc > best_dsc:
-            best_dsc = curr_dsc
-
-    log_dir = f'logs/{args.experiment_name}/fold_{fold}'
-    tb_logger = TensorboardLogger(log_dir=log_dir)
-
-    tb_logger.attach_output_handler(
-        trainer,
-        event_name=Events.EPOCH_COMPLETED,
-        tag='training',
-        output_transform=lambda loss: {'batchloss': loss},
-        metric_names='all',
-    )
-
-    for tag, evaluator in [('training', train_evaluator), ('validation', validation_evaluator)]:
-        tb_logger.attach_output_handler(
-            evaluator,
-            event_name=Events.EPOCH_COMPLETED,
-            tag=tag,
-            metric_names='all',
-            global_step_transform=global_step_from_engine(trainer),
-        )
-
-    def score_function(engine):
-        return engine.state.metrics['dsc']
-
-    model_checkpoint = ModelCheckpoint(
-        log_dir,
-        n_saved=1,
-        score_function=score_function,
-        filename_prefix='',
-        score_name='dsc',
-        global_step_transform=global_step_from_engine(trainer),
-        require_empty=False
-    )
-
-    validation_evaluator.add_event_handler(Events.COMPLETED, model_checkpoint, {'model': model})
-
-    trainer.run(loader_train, max_epochs=args.epochs)
-    tb_logger.close()
-
 
 
 if __name__ == '__main__':
