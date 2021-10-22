@@ -6,6 +6,7 @@ import datetime
 from pprint import pprint
 import time
 
+from tqdm import tqdm
 import numpy as np
 import torch
 import torch.optim as optim
@@ -35,6 +36,9 @@ import transforms as T
 
 from coco_utils import get_coco_api_from_dataset
 from coco_eval import CocoEvaluator
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 from torch.utils.tensorboard import SummaryWriter
 
@@ -76,7 +80,7 @@ def data_loaders(args):
     loader_train = DataLoader(
         dataset_train,
         batch_size=args.batch_size,
-        shuffle=True,
+        shuffle=False,
         drop_last=True,
         num_workers=args.workers,
         worker_init_fn=worker_init,
@@ -131,6 +135,18 @@ def warmup_lr_scheduler(optimizer, warmup_iters, warmup_factor):
 
     return torch.optim.lr_scheduler.LambdaLR(optimizer, f)
 
+def save_batch_image(images, targets):
+    fig, axs = plt.subplots(nrows=len(images), figsize=(7, len(images) * 7))
+    axs = axs.flatten()
+
+    for i in range(len(images)):
+      ax = axs[i]
+      ax.imshow(images[i][0].cpu().numpy())
+      bbox = targets[i]['boxes'][0].cpu().numpy()
+      rect = patches.Rectangle(bbox[:2], bbox[2] - bbox[0], bbox[3] - bbox[1], linewidth=1, edgecolor='r', facecolor='none')
+      ax.add_patch(rect)
+    plt.savefig('image.png')
+
 def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, writer: SummaryWriter):
     model.train()
     lr_scheduler = None
@@ -155,7 +171,10 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, wr
         if lr_scheduler is not None:
             lr_scheduler.step()
 
+        #save_batch_image(images, targets)
+
         break
+    print("Training epoch " + str(epoch) + " complete")
     
     writer.add_scalar("Loss/train", losses, epoch)
     
@@ -163,7 +182,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, wr
 def evaluate(model, data_loader, device):
     n_threads = torch.get_num_threads()
     # FIXME remove this and make paste_masks_in_image run on the GPU
-    torch.set_num_threads(1)
+    #torch.set_num_threads(1)
     cpu_device = torch.device("cpu")
     model.eval()
 
@@ -171,7 +190,7 @@ def evaluate(model, data_loader, device):
     iou_types = ["bbox"]
     coco_evaluator = CocoEvaluator(coco, iou_types)
 
-    for image, targets in data_loader:
+    for image, targets in tqdm(data_loader):
         image = list(img.to(device) for img in image)
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
@@ -192,6 +211,8 @@ def evaluate(model, data_loader, device):
     coco_evaluator.accumulate()
     coco_evaluator.summarize()
     torch.set_num_threads(n_threads)
+
+    print("Validation complete")
     return coco_evaluator
 
 def main(args):
@@ -214,13 +235,13 @@ def main(args):
 
     writer = SummaryWriter()
 
-    for epoch in range(num_epochs):
+    for epoch in tqdm(range(num_epochs)):
         # train for one epoch, printing every 10 iterations
         train_one_epoch(model, optimizer, loader_train, device, epoch, 10, writer)
         # update the learning rate
         lr_scheduler.step()
         # evaluate on the test dataset
-        #evaluate(model, loader_valid, device=device)
+        evaluate(model, loader_valid, device=device)
 
     writer.flush()
     writer.close()
