@@ -1,34 +1,15 @@
 import argparse
-import json
-import os
-import sys
 import datetime
-from pprint import pprint
 import time
+import os
 
 from tqdm import tqdm
 import numpy as np
 import torch
-import torch.optim as optim
-from torch.nn import MSELoss
 from torch.utils.data import DataLoader
-import matplotlib.pyplot as plt
-from ignite.utils import setup_logger
-from ignite.handlers import ModelCheckpoint
-from ignite.contrib.handlers.tensorboard_logger import (
-    TensorboardLogger,
-    global_step_from_engine,
-)
-from ignite.engine import Events, create_supervised_trainer, create_supervised_evaluator
-from ignite.metrics import Accuracy, Loss
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-
-from sklearn.model_selection import KFold
-
 import torchvision
-from torchvision.models.detection import FasterRCNN
-from torchvision.models.detection.rpn import AnchorGenerator
 
 from dataset import XRayDataset
 
@@ -67,7 +48,7 @@ def get_model(args, device):
   # get number of input features for the classifier
   in_features = model.roi_heads.box_predictor.cls_score.in_features
   # replace the pre-trained head with a new one
-  model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)
+  model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)      
   
   return model
 
@@ -88,7 +69,7 @@ def data_loaders(args):
     )
     loader_valid = DataLoader(
         dataset_valid,
-        batch_size=args.batch_size,
+        batch_size=1,
         drop_last=False,
         num_workers=args.workers,
         worker_init_fn=worker_init,
@@ -173,16 +154,15 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, wr
 
         #save_batch_image(images, targets)
 
-        break
     print("Training epoch " + str(epoch) + " complete")
     
     writer.add_scalar("Loss/train", losses, epoch)
     
 @torch.no_grad()
-def evaluate(model, data_loader, device):
+def evaluate(model, data_loader, device, epoch=None, writer=None):
     n_threads = torch.get_num_threads()
     # FIXME remove this and make paste_masks_in_image run on the GPU
-    #torch.set_num_threads(1)
+    torch.set_num_threads(1)
     cpu_device = torch.device("cpu")
     model.eval()
 
@@ -202,6 +182,7 @@ def evaluate(model, data_loader, device):
         model_time = time.time() - model_time
 
         res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
+
         coco_evaluator.update(res)
 
     # gather the stats from all processes
@@ -211,6 +192,10 @@ def evaluate(model, data_loader, device):
     coco_evaluator.accumulate()
     coco_evaluator.summarize()
     torch.set_num_threads(n_threads)
+
+    mAP = coco_evaluator.coco_eval['bbox'].stats[0]
+    if writer is not None:
+      writer.add_scalar("Loss/valid", mAP, epoch)
 
     print("Validation complete")
     return coco_evaluator
@@ -226,22 +211,41 @@ def main(args):
     params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.SGD(params, lr=args.lr,
                                 momentum=0.9, weight_decay=0.0005)
+
     # and a learning rate scheduler
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                    step_size=3,
                                                    gamma=0.1)
+    start_epoch = 0
+    
+    if os.path.exists(f'runs/{args.experiment_name}'):
+      files = os.listdir(f'runs/{args.experiment_name}')
+      files.sort()
+      checkpoints = [f for f in files if '.pt']
+      if len(checkpoints) > 0:
+        checkpoint = checkpoints[-1]
+        model.load_state_dict(checkpoint['model'])
+        optimizer.load_state_dict(checkpoint['optimizer'])
+        lr_scheduler.load_state_dict(checkpoint['lr_scheduler'])
+        start_epoch = checkpoint['epoch']
+        model.train()
 
     num_epochs = args.epochs
 
-    writer = SummaryWriter()
+    writer = SummaryWriter(log_dir=f'runs/{args.experiment_name}')
 
-    for epoch in tqdm(range(num_epochs)):
+    for epoch in tqdm(range(start_epoch, num_epochs)):
         # train for one epoch, printing every 10 iterations
         train_one_epoch(model, optimizer, loader_train, device, epoch, 10, writer)
         # update the learning rate
         lr_scheduler.step()
         # evaluate on the test dataset
-        evaluate(model, loader_valid, device=device)
+        evaluate(model, loader_valid, device, epoch, writer)
+        torch.save({
+            'epoch': epoch,
+            'model': model.state_dict(),
+            'optimizer': optimizer.state_dict(),
+          }, f'runs/{args.experiment_name}/checkpoint.pt')
 
     writer.flush()
     writer.close()
