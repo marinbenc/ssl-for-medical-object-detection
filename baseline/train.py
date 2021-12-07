@@ -2,6 +2,7 @@ import argparse
 import datetime
 import time
 import os
+import sys
 
 from tqdm import tqdm
 import numpy as np
@@ -9,6 +10,8 @@ import torch
 from torch.utils.data import DataLoader
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.models.detection.rpn import AnchorGenerator
+from torchvision.models.detection import FasterRCNN
 import torchvision
 
 from dataset import XRayDataset
@@ -23,34 +26,32 @@ import matplotlib.patches as patches
 
 from torch.utils.tensorboard import SummaryWriter
 
+sys.path.append('..')
+from early_stopping import EarlyStopping
+
 def collate_fn(batch):
     return tuple(zip(*batch))
 
 def get_transform(train):
     transforms = []
     transforms.append(T.ToTensor())
-    # if train:
-    #     transforms.append(T.RandomHorizontalFlip(0.5))
+    if train:
+        transforms.append(T.RandomHorizontalFlip(0.5))
     return T.Compose(transforms)
 
-# def get_splits(args, patients):
-#     kfolds = KFold(n_splits=args.folds, shuffle=False)
-#     patients.sort()
-#     patients = np.array(patients)
-#     return patients, kfolds.split(patients)
-
 def get_model(args, device):
-  # load a model pre-trained on COCO
-  model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
-  # replace the classifier with a new one, that has
-  # num_classes which is user-defined
-  num_classes = 2  # 1 class (person) + background
-  # get number of input features for the classifier
-  in_features = model.roi_heads.box_predictor.cls_score.in_features
-  # replace the pre-trained head with a new one
-  model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes)      
-  
-  return model
+    backbone = torchvision.models.detection.backbone_utils.resnet_fpn_backbone('resnet18', True)
+    backbone.out_channels = 256
+    anchor_generator = AnchorGenerator(sizes=((32,), (64,), (128,), (256,), (512,)),
+                                   aspect_ratios=((0.5, 1.0, 2.0),) * 5)
+    roi_pooler = torchvision.ops.MultiScaleRoIAlign(featmap_names=['0'],
+                                                output_size=7,
+                                                sampling_ratio=2)
+    model = FasterRCNN(backbone,
+                   num_classes=2,
+                   rpn_anchor_generator=anchor_generator,
+                   box_roi_pool=roi_pooler)
+    return model
 
 def data_loaders(args):
     dataset_train, dataset_valid, dataset_test = datasets(args)
@@ -151,7 +152,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, wr
 
         if lr_scheduler is not None:
             lr_scheduler.step()
-
+        
         #save_batch_image(images, targets)
 
     print("Training epoch " + str(epoch) + " complete")
@@ -175,11 +176,9 @@ def evaluate(model, data_loader, device, epoch=None, writer=None):
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
         torch.cuda.synchronize()
-        model_time = time.time()
         outputs = model(image)
 
         outputs = [{k: v.to(cpu_device) for k, v in t.items()} for t in outputs]
-        model_time = time.time() - model_time
 
         res = {target["image_id"].item(): output for target, output in zip(targets, outputs)}
 
@@ -193,7 +192,7 @@ def evaluate(model, data_loader, device, epoch=None, writer=None):
     coco_evaluator.summarize()
     torch.set_num_threads(n_threads)
 
-    mAP = coco_evaluator.coco_eval['bbox'].stats[0]
+    mAP = coco_evaluator.coco_eval['bbox'].stats[1]
     if writer is not None:
       writer.add_scalar("Loss/valid", mAP, epoch)
 
@@ -212,10 +211,10 @@ def main(args):
     optimizer = torch.optim.SGD(params, lr=args.lr,
                                 momentum=0.9, weight_decay=0.0005)
 
-    # and a learning rate scheduler
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer,
                                                    step_size=3,
                                                    gamma=0.1)
+    early_stopping = EarlyStopping(patience=10)
     start_epoch = 0
     
     if os.path.exists(f'runs/{args.experiment_name}'):
@@ -235,12 +234,16 @@ def main(args):
     writer = SummaryWriter(log_dir=f'runs/{args.experiment_name}')
 
     for epoch in tqdm(range(start_epoch, num_epochs)):
-        # train for one epoch, printing every 10 iterations
         train_one_epoch(model, optimizer, loader_train, device, epoch, 10, writer)
-        # update the learning rate
         lr_scheduler.step()
-        # evaluate on the test dataset
-        evaluate(model, loader_valid, device, epoch, writer)
+
+        eval = evaluate(model, loader_valid, device, epoch, writer)
+        mAP = eval.coco_eval['bbox'].stats[0]
+        early_stopping(-mAP)
+        if early_stopping.early_stop:
+            print("Stopping early")
+            break
+
         torch.save({
             'epoch': epoch,
             'model': model.state_dict(),
