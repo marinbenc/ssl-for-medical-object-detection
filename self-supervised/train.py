@@ -10,9 +10,12 @@ import torch
 from torch.utils.data import DataLoader
 import torchvision
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision.models.detection.rpn import AnchorGenerator
+from torchvision.models.detection import FasterRCNN
 import torchvision
 
-from dataset import XRayDataset
+sys.path.append('..')
+from dataset import XRayDataset, data_loaders
 
 import transforms as T
 
@@ -27,40 +30,45 @@ from torch.utils.tensorboard import SummaryWriter
 sys.path.append('..')
 from early_stopping import EarlyStopping
 
-sys.path.append('../baseline')
-import train as baseline_train
+sys.path.append('..')
+import baseline.train as baseline_train
 from ss_pretrain import ss_pretrain
 
-def get_backbone():
-    backbone = torchvision.models.detection.backbone_utils.resnet_fpn_backbone('resnet18', True)
-    backbone.out_channels = 256
-    return backbone
-
 def get_downstream_model(backbone, args, device):
+    # TODO issue with this: assert len(grid_sizes) == len(strides) == len(cell_anchors)
     anchor_generator = AnchorGenerator(sizes=((32,), (64,), (128,), (256,), (512,)),
                                    aspect_ratios=((0.5, 1.0, 2.0),) * 5)
     roi_pooler = torchvision.ops.MultiScaleRoIAlign(featmap_names=['0'],
                                                 output_size=7,
                                                 sampling_ratio=2)
+    backbone = torch.nn.Sequential(*list(backbone.children())[:-1])
+    #backbone_head = list(torchvision.models.resnet18().children())[-1]
+    #new_backbone = torch.nn.Sequential(*list(backbone.children()) + [backbone_head])
+    #new_backbone.out_channels = 512
+    backbone.out_channels = 512
     model = FasterRCNN(backbone,
                    num_classes=2,
-                   rpn_anchor_generator=anchor_generator,
                    box_roi_pool=roi_pooler)
+    model.to(device)
     return model
 
 def main(args):
     device = torch.device('cpu' if not torch.cuda.is_available() else 'cuda')
-    pretrained_model_backbone = train_self_supervised_pretraining()
+    pretrained_model_backbone = train_self_supervised_pretraining(args)
+    # TODO Turn 128 into a parameter
+    pretrained_model_backbone.out_channels = 512
     train_downstream(pretrained_model_backbone, args, device)
 
-def train_self_supervised_pretraining():
-    backbone = get_backbone()
-    backbone = ss_pretrain(backbone, 512, batch_size=args.batch_size, max_epochs=1)
+def train_self_supervised_pretraining(args):
+    backbone = ss_pretrain(args, None, 512, batch_size=args.batch_size, max_epochs=1)
+    # TODO DRY
+    device = torch.device('cpu' if not torch.cuda.is_available() else 'cuda')
+    backbone.to(device)
     return backbone
 
 def train_downstream(backbone, args, device):
-    device = torch.device('cpu' if not torch.cuda.is_available() else 'cuda')
-    loader_train, loader_valid = baseline_train.data_loaders(args)
+    model = get_downstream_model(backbone, args, device)
+    loader_train, loader_valid = data_loaders(args)
     params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.SGD(params, lr=args.lr,
                                 momentum=0.9, weight_decay=0.0005)

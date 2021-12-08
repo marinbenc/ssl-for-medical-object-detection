@@ -15,9 +15,6 @@ from torchvision.models.detection import FasterRCNN
 import torchvision
 
 from dataset import XRayDataset
-
-import transforms as T
-
 from coco_utils import get_coco_api_from_dataset
 from coco_eval import CocoEvaluator
 
@@ -28,16 +25,6 @@ from torch.utils.tensorboard import SummaryWriter
 
 sys.path.append('..')
 from early_stopping import EarlyStopping
-
-def collate_fn(batch):
-    return tuple(zip(*batch))
-
-def get_transform(train):
-    transforms = []
-    transforms.append(T.ToTensor())
-    if train:
-        transforms.append(T.RandomHorizontalFlip(0.5))
-    return T.Compose(transforms)
 
 def get_model(args, device):
     backbone = torchvision.models.detection.backbone_utils.resnet_fpn_backbone('resnet18', True)
@@ -52,42 +39,6 @@ def get_model(args, device):
                    rpn_anchor_generator=anchor_generator,
                    box_roi_pool=roi_pooler)
     return model
-
-def data_loaders(args):
-    dataset_train, dataset_valid, dataset_test = datasets(args)
-
-    def worker_init(worker_id):
-        np.random.seed(42 + worker_id)
-
-    loader_train = DataLoader(
-        dataset_train,
-        batch_size=args.batch_size,
-        shuffle=False,
-        drop_last=True,
-        num_workers=args.workers,
-        worker_init_fn=worker_init,
-        collate_fn=collate_fn,
-    )
-    loader_valid = DataLoader(
-        dataset_valid,
-        batch_size=1,
-        drop_last=False,
-        num_workers=args.workers,
-        worker_init_fn=worker_init,
-        collate_fn=collate_fn,
-    )
-
-    return loader_train, loader_valid
-
-def datasets(args):
-    all_train = XRayDataset('train', transforms=get_transform(True))
-    indices = torch.randperm(len(all_train)).tolist()
-    split_index = int(0.75 * len(all_train))
-    train = torch.utils.data.Subset(all_train, indices[:split_index])
-    valid = torch.utils.data.Subset(all_train, indices[split_index:])
-
-    #test = XRayDataset('test', transforms=get_transform(False))
-    return train, valid, ''
 
 def check_pipeline():
     device = torch.device('cpu' if not torch.cuda.is_available() else 'cuda')
