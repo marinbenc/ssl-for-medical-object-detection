@@ -1,5 +1,7 @@
 vinbigdata
 baseline/runs
+self-supervised/runs
+self-supervised/lightning_logs
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudiocode,python,jupyternotebooks
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudiocode,python,jupyternotebooks
 

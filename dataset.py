@@ -106,9 +106,18 @@ def data_loaders(args):
         num_workers=args.workers,
         worker_init_fn=worker_init,
         collate_fn=collate_fn,
+    )    
+    loader_test = DataLoader(
+        dataset_test,
+        batch_size=1,
+        drop_last=False,
+        num_workers=args.workers,
+        worker_init_fn=worker_init,
+        collate_fn=collate_fn,
     )
 
-    return loader_train, loader_valid
+
+    return loader_train, loader_valid, loader_test
 
 def datasets(args, original_dataset):
     all_train = original_dataset
@@ -116,7 +125,6 @@ def datasets(args, original_dataset):
     split_index = int(0.75 * len(all_train))
     train = torch.utils.data.Subset(all_train, indices[:split_index])
     valid = torch.utils.data.Subset(all_train, indices[split_index:])
-
     #test = XRayDataset('test', transforms=get_transform(False))
     return train, valid, ''
 

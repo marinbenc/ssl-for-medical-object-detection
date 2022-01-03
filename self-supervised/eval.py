@@ -13,7 +13,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 import torchvision
 
 sys.path.append('..')
-from dataset import XRayDataset, data_loaders
+from dataset import XRayDataset
 
 import transforms as T
 
@@ -21,14 +21,14 @@ from coco_utils import get_coco_api_from_dataset
 from coco_eval import CocoEvaluator
 
 import train
-from train import get_model
+from train import get_untrained_model, data_loaders
 
 def main(args):
     device = torch.device('cpu' if not torch.cuda.is_available() else 'cuda')
 
     loader_train, _, loader_test = data_loaders(args)
 
-    model = get_model(args, device)
+    model = get_untrained_model(args, device)
     model.to(device)
 
     files = os.listdir(f'runs/{args.experiment_name}')
@@ -42,11 +42,11 @@ def main(args):
     evaluate(model, loader_test, device)
 
 def evaluate(model, loader_test, device):
-    coco_metrics = train.evaluate(model, loader_test, device)
-    mAP_50_to_95 = ['bbox'].stats[0]
+    coco_metrics = train.baseline_train.evaluate(model, loader_test, device)
+    mAP_50_to_95 = coco_metrics.coco_eval['bbox'].stats[0]
 
     return
-    
+
     predictions = []
     gts = []
     for image, targets in tqdm(loader_test):
@@ -77,7 +77,7 @@ if __name__ == '__main__':
         default=1,
     )
     parser.add_argument(
-        '--experiment_name', type=str, 
+        '--experiment-name', type=str, 
         default=datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"), 
         help='the name of the experiment'
     )
