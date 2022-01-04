@@ -109,8 +109,6 @@ def get_ss_model():
 def ss_pretrain(args, input_size, num_ftrs=32 * 16, batch_size=128, max_epochs=20):
   num_workers = 8
   seed = 1
-  train_split = 0.7
-  max_epochs = 30
 
   pl.seed_everything(seed)
 
@@ -144,12 +142,8 @@ def ss_pretrain(args, input_size, num_ftrs=32 * 16, batch_size=128, max_epochs=2
       torchvision.transforms.ToPILImage()
   ])
 
-  # TODO Make sure the perm and split is identical to baseline and repeatable
-  all_train = lightly.data.dataset.LightlyDataset('../vinbigdata/train')
-  indices = torch.randperm(len(all_train)).tolist()
-  split_index = int(train_split * len(all_train))
-  dataset_train = torch.utils.data.Subset(all_train, indices[:split_index])
-  dataset_valid = torch.utils.data.Subset(all_train, indices[split_index:])
+  all_images = lightly.data.dataset.LightlyDataset('../vinbigdata/train')
+  dataset_train, dataset_valid, _ = datasets(args, all_images, all_images)
 
   dataloader_train_simclr = torch.utils.data.DataLoader(
       dataset_train,
