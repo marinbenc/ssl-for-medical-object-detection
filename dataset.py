@@ -1,4 +1,5 @@
 import os
+import random
 
 import numpy as np
 import torch
@@ -84,8 +85,10 @@ class XRayDataset(torch.utils.data.Dataset):
 def collate_fn(batch):
     return tuple(zip(*batch))
 
-def data_loaders(args):
-    dataset_train, dataset_valid, dataset_test = datasets(args, XRayDataset('train', transforms=get_transform(True)))
+def data_loaders(args, original_dataset=None, test_dataset=None):
+    if original_dataset is None:
+        original_dataset = XRayDataset('train', transforms=get_transform(True))
+    dataset_train, dataset_valid, dataset_test = datasets(args, original_dataset, test_dataset)
 
     def worker_init(worker_id):
         np.random.seed(42 + worker_id)
@@ -106,7 +109,7 @@ def data_loaders(args):
         num_workers=args.workers,
         worker_init_fn=worker_init,
         collate_fn=collate_fn,
-    )    
+    )
     loader_test = DataLoader(
         dataset_test,
         batch_size=1,
@@ -116,17 +119,28 @@ def data_loaders(args):
         collate_fn=collate_fn,
     )
 
-
     return loader_train, loader_valid, loader_test
 
-def datasets(args, original_dataset):
+def datasets(args, original_dataset, test_dataset=None):
     all_train = original_dataset
+    torch.manual_seed(1)
+    random.seed(1)
     indices = torch.randperm(len(all_train)).tolist()
-    split_index = int(0.75 * len(all_train))
-    train = torch.utils.data.Subset(all_train, indices[:split_index])
-    valid = torch.utils.data.Subset(all_train, indices[split_index:])
-    #test = XRayDataset('test', transforms=get_transform(False))
-    return train, valid, ''
+
+    # train, valid, test
+    splits = [0.7, 0.1, 0.2]
+
+    train_split_index = int(splits[0] * len(all_train))
+    valid_split_index = int((splits[0] + splits[1]) * len(all_train))
+    train = torch.utils.data.Subset(all_train, indices[:train_split_index])
+    valid = torch.utils.data.Subset(all_train, indices[train_split_index:valid_split_index])
+
+    if test_dataset is None:
+        test_dataset = XRayDataset('train', transforms=get_transform(False))
+    test = torch.utils.data.Subset(test_dataset, indices[valid_split_index:])
+
+    print(f'train: {len(train)}, valid: {len(valid)}, test: {len(test)}')
+    return train, valid, test
 
 def get_transform(train):
     transforms = []

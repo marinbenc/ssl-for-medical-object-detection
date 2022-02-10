@@ -1,4 +1,6 @@
 vinbigdata
+mmdet/data
+vinbig_output
 baseline/runs
 self-supervised/runs
 self-supervised/lightning_logs

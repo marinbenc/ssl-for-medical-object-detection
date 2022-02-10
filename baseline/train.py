@@ -78,7 +78,8 @@ def save_batch_image(images, targets):
       bbox = targets[i]['boxes'][0].cpu().numpy()
       rect = patches.Rectangle(bbox[:2], bbox[2] - bbox[0], bbox[3] - bbox[1], linewidth=1, edgecolor='r', facecolor='none')
       ax.add_patch(rect)
-    plt.savefig('image.png')
+    plt.show()
+    #plt.savefig('image.png')
 
 def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, writer: SummaryWriter):
     model.train()
@@ -94,6 +95,7 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, wr
         targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
 
         loss_dict = model(images, targets)
+        print(loss_dict)
 
         losses = sum(loss for loss in loss_dict.values())
 
@@ -105,6 +107,8 @@ def train_one_epoch(model, optimizer, data_loader, device, epoch, print_freq, wr
             lr_scheduler.step()
         
         #save_batch_image(images, targets)
+
+        break
 
     print("Training epoch " + str(epoch) + " complete")
     
