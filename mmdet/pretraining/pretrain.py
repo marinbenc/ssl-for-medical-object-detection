@@ -152,7 +152,7 @@ def ss_pretrain(experiment_name, replace, batch_size, epochs, lr, workers, label
 
   # construct a lightly dataset with only the pretraining files
   pretrain_dataset_mmdet, _ = train.get_training_datasets(labeled_dataset_percent, base_directory='..')
-  filenames = [image['file_name'].split('/')[-1] for image in pretrain_dataset_mmdet.data_infos]
+  filenames = [image['file_name'].split('/')[-1] for image in pretrain_dataset_mmdet.dataset.data_infos]
   dataset_train = lightly.data.dataset.LightlyDataset('../data/train', filenames=filenames)
   print('Samples in pretrain dataset: ' + str(len(dataset_train)))
 
@@ -196,26 +196,24 @@ def ss_pretrain(experiment_name, replace, batch_size, epochs, lr, workers, label
     max_epochs=epochs, gpus=gpus, progress_bar_refresh_rate=100, logger=logger
   )
 
-  batch = next(iter(dataloader_train_simclr))
-  (augmentation_1, augmentation_2), _, _ = batch
-  for i in range(len(augmentation_1)):
-    img1 = augmentation_1[i]
-    img2 = augmentation_2[i]
-    img1 = img1.squeeze().cpu().numpy()[0]
-    img2 = img2.squeeze().cpu().numpy()[0]
+  # batch = next(iter(dataloader_train_simclr))
+  # (augmentation_1, augmentation_2), _, _ = batch
+  # for i in range(len(augmentation_1)):
+  #   img1 = augmentation_1[i]
+  #   img2 = augmentation_2[i]
+  #   img1 = img1.squeeze().cpu().numpy()[0]
+  #   img2 = img2.squeeze().cpu().numpy()[0]
 
-    fig, axs = plt.subplots(1, 2)
-    axs = axs.flatten()
-    axs[0].imshow(img1)
-    axs[1].imshow(img2)
-    plt.show()
+  #   fig, axs = plt.subplots(1, 2)
+  #   axs = axs.flatten()
+  #   axs[0].imshow(img1)
+  #   axs[1].imshow(img2)
+  #   plt.show()
 
   trainer.fit(model, dataloader_train_simclr, dataloader_valid)
   pretrained_resnet_backbone = model.backbone
 
-  state_dict = {
-    'resnet18_parameters': pretrained_resnet_backbone.state_dict()
-  }
+  state_dict = pretrained_resnet_backbone.state_dict()
   torch.save(state_dict, output_folder + '/pretrain/pretrained-backbone.pth')
   #show_neighbors(model, dataloader_valid, device)
   return model.backbone

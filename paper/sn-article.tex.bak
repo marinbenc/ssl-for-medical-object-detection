@@ -209,7 +209,7 @@ To evaluate the pre-training, we randomly split the traning dataset into two sep
 
 \subsection{Baseline model details}
 
-For an objective and fair comparison, we train a baseline model using a standard deep learning-based approach for object detection. We use a Faster R-CNN-based model \citep{DBLP:conf/nips/RenHGS15} with a ResNet50 encoder \citep{He_2016_CVPR}. 
+For an objective and fair comparison, we train a baseline model using a standard deep learning-based approach for object detection. We use a Faster R-CNN-based model \citep{DBLP:conf/nips/RenHGS15} with a ResNet50 encoder \citep{He_2016_CVPR}. The model is initialized using pre-trained weights trained on the COCO dataset for 12 epochs, a batch size of 2 and using the SGD optimizer with a learning rate of 0.0002, momentum of 0.9 and a weight decay of 0.0001.
 
 \subsection{Pretraining model details}
 

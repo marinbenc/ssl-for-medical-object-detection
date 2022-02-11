@@ -5,6 +5,7 @@ import copy
 import shutil
 
 from natsort import natsorted
+import torch
 
 from mmdet.datasets import build_dataset, CocoDataset
 from mmdet.datasets.api_wrappers import COCO
@@ -78,7 +79,6 @@ class CocoDatasetSubset(CocoDataset):
 
 def get_training_datasets(labeled_dataset_percent, base_directory = '.'):
   cfg = get_config(base_directory)
-  print(cfg.data.train)
   cfg.data.train['dataset']['take_last_percent'] = labeled_dataset_percent
   dataset_finetune = build_dataset(cfg.data.train)
 
@@ -117,16 +117,21 @@ def train(experiment_name, labeled_dataset_percent, epochs, batch_size, lr, resu
     if (os.path.exists(logs_folder)):
       shutil.rmtree(logs_folder)
 
+    print(cfg.model.backbone.init_cfg)
+
     pretrained_backbone_folder = os.path.join(cfg.work_dir, 'pretrain')
     if (os.path.exists(pretrained_backbone_folder)):
       pretrained_backbone_path = os.path.join(pretrained_backbone_folder, 'pretrained-backbone.pth')
       cfg.model.backbone.init_cfg.checkpoint = pretrained_backbone_path
+      print('Loading pretrained backbone from ' + pretrained_backbone_path)
 
   _, train_dataset = get_training_datasets(labeled_dataset_percent)
   
   model = build_detector(cfg.model, train_cfg=cfg.get('train_cfg'))
   datasets = [train_dataset]
   cfg.workflow = [('train', 1)]
+  params = torch.load(pretrained_backbone_path)
+  print(params.keys())
   train_detector(model, datasets, cfg, distributed=False, validate=True)
 
 def parse_args():
