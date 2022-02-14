@@ -108,11 +108,78 @@ def parse_args():
         args.eval_options = args.options
     return args
 
-def test(cfg, checkpoint):
-  main(cfg, checkpoint)
+def test(cfg, checkpoint, args=None):
+  dataset = main(cfg, checkpoint, args)
+  return dataset
 
-def main(cfg=None, checkpoint=None):
-    args = parse_args()
+def get_outputs(cfg, checkpoint, args):
+    cfg.model.pretrained = None
+    if cfg.model.get('neck'):
+        if isinstance(cfg.model.neck, list):
+            for neck_cfg in cfg.model.neck:
+                if neck_cfg.get('rfp_backbone'):
+                    if neck_cfg.rfp_backbone.get('pretrained'):
+                        neck_cfg.rfp_backbone.pretrained = None
+        elif cfg.model.neck.get('rfp_backbone'):
+            if cfg.model.neck.rfp_backbone.get('pretrained'):
+                cfg.model.neck.rfp_backbone.pretrained = None
+    
+    # in case the test dataset is concatenated
+    samples_per_gpu = 1
+    if isinstance(cfg.data.test, dict):
+        cfg.data.test.test_mode = True
+        samples_per_gpu = cfg.data.test.pop('samples_per_gpu', 1)
+        if samples_per_gpu > 1:
+            # Replace 'ImageToTensor' to 'DefaultFormatBundle'
+            cfg.data.test.pipeline = replace_ImageToTensor(
+                cfg.data.test.pipeline)
+    elif isinstance(cfg.data.test, list):
+        for ds_cfg in cfg.data.test:
+            ds_cfg.test_mode = True
+        samples_per_gpu = max(
+            [ds_cfg.pop('samples_per_gpu', 1) for ds_cfg in cfg.data.test])
+        if samples_per_gpu > 1:
+            for ds_cfg in cfg.data.test:
+                ds_cfg.pipeline = replace_ImageToTensor(ds_cfg.pipeline)
+
+    cfg.gpu_ids = range(1)
+    distributed = False
+
+    # build the dataloader
+    dataset = build_dataset(cfg.data.test)
+    data_loader = build_dataloader(
+        dataset,
+        samples_per_gpu=samples_per_gpu,
+        workers_per_gpu=cfg.data.workers_per_gpu,
+        dist=distributed,
+        shuffle=False)
+
+    # build the model and load checkpoint
+    cfg.model.train_cfg = None
+    model = build_detector(cfg.model, test_cfg=cfg.get('test_cfg'))
+    fp16_cfg = cfg.get('fp16', None)
+    if fp16_cfg is not None:
+        wrap_fp16_model(model)
+    checkpoint = load_checkpoint(model, checkpoint, map_location='cpu')
+
+    # old versions did not save class info in checkpoints, this walkaround is
+    # for backward compatibility
+    if 'CLASSES' in checkpoint.get('meta', {}):
+        model.CLASSES = checkpoint['meta']['CLASSES']
+    else:
+        model.CLASSES = dataset.CLASSES
+
+    model = MMDataParallel(model, device_ids=cfg.gpu_ids)
+    outputs = single_gpu_test(model, data_loader, args.show, args.show_dir,
+                                args.show_score_thr)
+
+    return dataset, outputs
+
+
+
+def main(cfg=None, checkpoint=None, args=None):
+    if args is None:
+        args = parse_args()
 
     assert args.out or args.eval or args.format_only or args.show \
         or args.show_dir, \
@@ -241,10 +308,11 @@ def main(cfg=None, checkpoint=None):
                 eval_kwargs.pop(key, None)
             eval_kwargs.update(dict(metric=args.eval, **kwargs))
             metric = dataset.evaluate(outputs, **eval_kwargs)
-            print(metric)
             metric_dict = dict(metric=metric)
             if args.work_dir is not None and rank == 0:
                 mmcv.dump(metric_dict, json_file)
+
+    return dataset
 
 
 if __name__ == '__main__':

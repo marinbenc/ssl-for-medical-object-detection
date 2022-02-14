@@ -11,7 +11,7 @@ import mmcv
 from mmdet.datasets import build_dataset, build_dataloader
 
 from base_config import get_config
-from mmdet_tools import test as mmdet_test
+from mmdet_tools import mmdet_test
 
 from train import get_training_datasets
 
@@ -86,8 +86,9 @@ def dataset_stats(cfg, checkpoint):
     plt.title(titles[i])
     plt.show()
 
-def map_test(cfg, checkpoint):
-  mmdet_test.test(cfg, checkpoint)
+def map_test(cfg, checkpoint, args=None):
+  dataset = mmdet_test.test(cfg, checkpoint, args)
+  return dataset
 
 def parse_args():
   parser = argparse.ArgumentParser(description='Model testing')

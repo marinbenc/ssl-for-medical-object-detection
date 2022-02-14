@@ -174,7 +174,11 @@ model hyperparameters and determine when to stop training, and the test set is u
 evaluation. The model did not have access to the test set during training.
 
 The original dataset differentiates 14 different classes, one of which is the "no finding" class. 
-We discard this class, resulting in 13 possible class labels. Each image can have one or more 
+We discard this class, resulting in 13 possible class labels. The class distribution of the full dataset is shown in Figure \ref{fig:class-balance}.
+
+% todo fig:class-balance
+
+Each image can have one or more 
 labels from multiple experts, and these labels often overlap. To produce the least noisy labels, 
 we fused overlapping labels from multiple experts into one label by finding an average rectangle 
 of several overlapping rectanges. To determine if two rectangles are overlapping, an intersection-over-union 
@@ -186,6 +190,8 @@ defined by coordinates $(\bar{X_{1}}, \bar{Y_{1}})$ and $(\bar{X_{2}}, \bar{Y_{2
 \bar{X_1} = \frac{\sum_{i=1}^{N} X_{i1}}{N}, \bar{Y_1} = \frac{\sum_{i=1}^{N} Y_{i1}}{N},\\
 \bar{X_2} = \frac{\sum_{i=1}^{N} X_{i2}}{N}, \bar{Y_2} = \frac{\sum_{i=1}^{N} Y_{i2}}{N} \nonumber
 \end{align}
+
+% TODO text description instead of formula
 
 Where $N$ is the number of rectangles to average. This approach is based on weighted boxes fusion 
 described in \cite{solovyevWeightedBoxesFusion2021}, but modified such that each bounding box has 
@@ -207,9 +213,21 @@ To evaluate the pre-training, we randomly split the traning dataset into two sep
 \label{fig:dataset-split-summary}
 \end{figure}
 
+\subsection{Balancing the dataset}
+
+As shown in Figure \ref{fig:class-balance} the dataset is highly imbalanced. To improve class-balance during training we oversample examples with less-represented classes. We use the oversampling approach described in \cite{gupta2019lvis}. The general approach is as follows:
+
+\begin{enumerate}
+\item For each class $c$, compute it's frequency $f(c)$ in the training set.
+\item Compute a class repeat factor $r(c) = max(1, \sqrt{{t}/{f(c)}})$, where $t$ is a threshold value empericially set to 0.4 in our experiments. The value of 0.4 produced the maximum validation mean average precision for the baseline model.
+\item For each image $I$, compute an image repeat factor $r(I) = C * r(c)$ where $C = max(r(c_i))$ for each class $c_i$ in image $I$.
+\end{enumerate}
+
+This balancing is performed on-line during training and only on the training set. We found that balancing the dataset in this way drastically improved the mean average precision when averaged across all classes.
+
 \subsection{Baseline model details}
 
-For an objective and fair comparison, we train a baseline model using a standard deep learning-based approach for object detection. We use a Faster R-CNN-based model \citep{DBLP:conf/nips/RenHGS15} with a ResNet50 encoder \citep{He_2016_CVPR}. 
+For an objective and fair comparison, we train a baseline model using a standard deep learning-based approach for object detection. We use a Faster R-CNN-based model \citep{DBLP:conf/nips/RenHGS15} with a ResNet50 encoder \citep{He_2016_CVPR}. The model is initialized using pre-trained weights trained on the COCO dataset for 12 epochs, a batch size of 2 and using the SGD optimizer with a learning rate of 0.0002, momentum of 0.9 and a weight decay of 0.0001.
 
 \subsection{Pretraining model details}
 
@@ -226,36 +244,56 @@ In our experiments, we use the following augmentations for SimCLR training:
 \item A random amount of Gaussian noise with $\sigma$ being a random number between 12.5\% and 25\% of the mean image pixel value.
 \end{enumerate}
 
-In addition, each traning and validation image has histogram normalization applied.
-
-\section{Related work}
-
-% self-supervision
-% SS in medicine
-  % the 2-3 papers i mentioned as surveys
-% object detection (in medicine)
-  % retina net, faster rcnn, rcnn, yolo, retina unet
-% chest radiographs
-  % chexpert papers and such?
-
-
-\section{Introduction}\label{sec1}
-
-The Introduction section, of referenced text \cite{bib1} expands on the background of the work (some overlap with the Abstract is acceptable). The introduction should not include subheadings.
-
-Springer Nature does not impose a strict layout as standard however authors are advised to check the individual requirements for the journal they are planning to submit to as there may be journal-level preferences. When preparing your text please also be aware that some stylistic choices are not supported in full text XML (publication version), including coloured font. These will not be replicated in the typeset article if it is accepted. 
+In addition, each training and validation image has histogram normalization applied.
 
 \section{Results}\label{sec2}
 
-Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text.
+\section{Discussion}\label{sec12}
 
-\section{This is an example for first level head---section head}\label{sec3}
+Discussions should be brief and focused. In some disciplines use of Discussion or `Conclusion' is interchangeable. It is not mandatory to use both. Some journals prefer a section `Results and Discussion' followed by a section `Conclusion'. Please refer to Journal-level guidance for any specific requirements. 
 
-\subsection{This is an example for second level head---subsection head}\label{subsec2}
+\section{Conclusion}\label{sec13}
 
-\subsubsection{This is an example for third level head---subsubsection head}\label{subsubsec2}
+Conclusions may be used to restate your hypothesis or research question, restate your major findings, explain the relevance and the added value of your work, highlight any limitations of your study, describe future directions for research and recommendations. 
 
-Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. Sample body text. 
+In some disciplines use of Discussion or 'Conclusion' is interchangeable. It is not mandatory to use both. Please refer to Journal-level guidance for any specific requirements. 
+
+\backmatter
+
+\bmhead{Supplementary information}
+
+If your article has accompanying supplementary file/s please state so here. 
+
+Authors reporting data from electrophoretic gels and blots should supply the full unprocessed scans for key as part of their Supplementary information. This may be requested by the editorial team/s if it is missing.
+
+Please refer to Journal-level guidance for any specific requirements.
+
+\bmhead{Acknowledgments}
+
+Acknowledgments are not compulsory. Where included they should be brief. Grant or contribution numbers may be acknowledged.
+
+Please refer to Journal-level guidance for any specific requirements.
+
+\section*{Declarations}
+
+Some journals require declarations to be submitted in a standardised format. Please check the Instructions for Authors of the journal to which you are submitting to see if you need to complete this section. If yes, your manuscript must contain the following sections under the heading `Declarations':
+
+\begin{itemize}
+\item Funding
+\item Conflict of interest/Competing interests (check journal-specific guidelines for which heading to use)
+\item Ethics approval 
+\item Consent to participate
+\item Consent for publication
+\item Availability of data and materials
+\item Code availability 
+\item Authors' contributions
+\end{itemize}
+
+\noindent
+If any of the sections are not relevant to your manuscript, please include the heading and write `Not applicable' for that section. 
+
+
+\section{---------------------------------------------------------}
 
 \section{Equations}\label{sec4}
 
