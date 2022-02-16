@@ -1,0 +1,56 @@
+This is BibTeX, Version 0.99d (TeX Live 2020)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: /Users/marinbenc/projects_clean/aortic-aneurysm-xray/paper/.texpadtmp/conference_101719.aux
+The style file: IEEEtran.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: ../bibfile.bib
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+
+Done.
+You've used 6 entries,
+            4087 wiz_defined-function locations,
+            860 strings with 9456 characters,
+and the built_in function-call counts, 4479 in all, are:
+= -- 293
+> -- 201
+< -- 9
++ -- 97
+- -- 47
+* -- 242
+:= -- 647
+add.period$ -- 12
+call.type$ -- 6
+change.case$ -- 8
+chr.to.int$ -- 18
+cite$ -- 6
+duplicate$ -- 339
+empty$ -- 381
+format.name$ -- 54
+if$ -- 1024
+int.to.chr$ -- 0
+int.to.str$ -- 6
+missing$ -- 81
+newline$ -- 41
+num.names$ -- 8
+pop$ -- 223
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 319
+stack$ -- 0
+substring$ -- 60
+swap$ -- 247
+text.length$ -- 3
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 6
+warning$ -- 0
+while$ -- 12
+width$ -- 7
+write$ -- 74
