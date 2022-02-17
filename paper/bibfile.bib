@@ -1,3 +1,35 @@
+
+@article{aziziBigSelfSupervisedModels2021,
+  title = {Big {{Self}}-{{Supervised Models Advance Medical Image Classification}}},
+  author = {Azizi, Shekoofeh and Mustafa, Basil and Ryan, Fiona and Beaver, Zachary and Freyberg, Jan and Deaton, Jonathan and Loh, Aaron and Karthikesalingam, Alan and Kornblith, Simon and Chen, Ting and Natarajan, Vivek and Norouzi, Mohammad},
+  year = {2021},
+  month = apr,
+  journal = {arXiv:2101.05224 [cs, eess]},
+  eprint = {2101.05224},
+  eprinttype = {arxiv},
+  primaryclass = {cs, eess},
+  abstract = {Self-supervised pretraining followed by supervised fine-tuning has seen success in image recognition, especially when labeled examples are scarce, but has received limited attention in medical image analysis. This paper studies the effectiveness of self-supervised learning as a pretraining strategy for medical image classification. We conduct experiments on two distinct tasks: dermatology skin condition classification from digital camera images and multi-label chest X-ray classification, and demonstrate that self-supervised learning on ImageNet, followed by additional self-supervised learning on unlabeled domain-specific medical images significantly improves the accuracy of medical image classifiers. We introduce a novel Multi-Instance Contrastive Learning (MICLe) method that uses multiple images of the underlying pathology per patient case, when available, to construct more informative positive pairs for self-supervised learning. Combining our contributions, we achieve an improvement of 6.7\% in top-1 accuracy and an improvement of 1.1\% in mean AUC on dermatology and chest X-ray classification respectively, outperforming strong supervised baselines pretrained on ImageNet. In addition, we show that big self-supervised models are robust to distribution shift and can learn efficiently with a small number of labeled medical images.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Electrical Engineering and Systems Science - Image and Video Processing},
+  file = {/home/marinbenc/Zotero/storage/SV3935QY/Azizi et al. - 2021 - Big Self-Supervised Models Advance Medical Image C.pdf;/home/marinbenc/Zotero/storage/WW6U6M5Y/2101.html}
+}
+
+@incollection{baiSelfSupervisedLearningCardiac2019,
+  title = {Self-{{Supervised Learning}} for {{Cardiac MR Image Segmentation}} by {{Anatomical Position Prediction}}},
+  booktitle = {Medical {{Image Computing}} and {{Computer Assisted Intervention}} \textendash{} {{MICCAI}} 2019},
+  author = {Bai, Wenjia and Chen, Chen and Tarroni, Giacomo and Duan, Jinming and Guitton, Florian and Petersen, Steffen E. and Guo, Yike and Matthews, Paul M. and Rueckert, Daniel},
+  editor = {Shen, Dinggang and Liu, Tianming and Peters, Terry M. and Staib, Lawrence H. and Essert, Caroline and Zhou, Sean and Yap, Pew-Thian and Khan, Ali},
+  year = {2019},
+  volume = {11765},
+  pages = {541--549},
+  publisher = {{Springer International Publishing}},
+  address = {{Cham}},
+  doi = {10.1007/978-3-030-32245-8_60},
+  isbn = {978-3-030-32244-1 978-3-030-32245-8},
+  language = {en},
+  file = {/home/marinbenc/Zotero/storage/TMT6K8MT/Bai et al. - 2019 - Self-Supervised Learning for Cardiac MR Image Segm.pdf}
+}
+
 @article{chenSimpleFrameworkContrastive2020,
   title = {A {{Simple Framework}} for {{Contrastive Learning}} of {{Visual Representations}}},
   author = {Chen, Ting and Kornblith, Simon and Norouzi, Mohammad and Hinton, Geoffrey},
@@ -40,6 +72,75 @@
   month = jun
 }
 
+@article{he2019moco,
+  title = {Momentum Contrast for Unsupervised Visual Representation Learning},
+  author = {He, Kaiming and Fan, Haoqi and Wu, Yuxin and Xie, Saining and Girshick, Ross},
+  year = {2019},
+  journal = {arXiv preprint arXiv:1911.05722},
+  eprint = {1911.05722},
+  eprinttype = {arxiv},
+  archiveprefix = {arXiv}
+}
+
+@article{litjensSurveyDeepLearning2017,
+  title = {A Survey on Deep Learning in Medical Image Analysis},
+  author = {Litjens, Geert and Kooi, Thijs and Bejnordi, Babak Ehteshami and Setio, Arnaud Arindra Adiyoso and Ciompi, Francesco and Ghafoorian, Mohsen and {van der Laak}, Jeroen A.W.M. and {van Ginneken}, Bram and S{\'a}nchez, Clara I.},
+  year = {2017},
+  month = dec,
+  journal = {Medical Image Analysis},
+  volume = {42},
+  pages = {60--88},
+  issn = {13618415},
+  doi = {10.1016/j.media.2017.07.005},
+  language = {en},
+  file = {/home/marinbenc/Zotero/storage/IE6TSRWD/Litjens et al. - 2017 - A survey on deep learning in medical image analysi.pdf}
+}
+
+@article{liuSelfsupervisedLearningMore2021,
+  title = {Self-Supervised {{Learning}} Is {{More Robust}} to {{Dataset Imbalance}}},
+  author = {Liu, Hong and HaoChen, Jeff Z. and Gaidon, Adrien and Ma, Tengyu},
+  year = {2021},
+  month = oct,
+  journal = {arXiv:2110.05025 [cs, stat]},
+  eprint = {2110.05025},
+  eprinttype = {arxiv},
+  primaryclass = {cs, stat},
+  abstract = {Self-supervised learning (SSL) is a scalable way to learn general visual representations since it learns without labels. However, large-scale unlabeled datasets in the wild often have long-tailed label distributions, where we know little about the behavior of SSL. In this work, we systematically investigate self-supervised learning under dataset imbalance. First, we find out via extensive experiments that off-the-shelf self-supervised representations are already more robust to class imbalance than supervised representations. The performance gap between balanced and imbalanced pre-training with SSL is significantly smaller than the gap with supervised learning, across sample sizes, for both in-domain and, especially, out-of-domain evaluation. Second, towards understanding the robustness of SSL, we hypothesize that SSL learns richer features from frequent data: it may learn label-irrelevant-but-transferable features that help classify the rare classes and downstream tasks. In contrast, supervised learning has no incentive to learn features irrelevant to the labels from frequent examples. We validate this hypothesis with semi-synthetic experiments and theoretical analyses on a simplified setting. Third, inspired by the theoretical insights, we devise a re-weighted regularization technique that consistently improves the SSL representation quality on imbalanced datasets with several evaluation criteria, closing the small gap between balanced and imbalanced datasets with the same number of examples.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Statistics - Machine Learning},
+  file = {/home/marinbenc/Zotero/storage/64JUHWXH/Liu et al. - 2021 - Self-supervised Learning is More Robust to Dataset.pdf;/home/marinbenc/Zotero/storage/4KVWATH5/2110.html}
+}
+
+@article{liuSemisupervisedMedicalImage2020,
+  title = {Semi-Supervised {{Medical Image Classification}} with {{Relation}}-Driven {{Self}}-Ensembling {{Model}}},
+  author = {Liu, Quande and Yu, Lequan and Luo, Luyang and Dou, Qi and Heng, Pheng Ann},
+  year = {2020},
+  month = nov,
+  journal = {IEEE Transactions on Medical Imaging},
+  volume = {39},
+  number = {11},
+  eprint = {2005.07377},
+  eprinttype = {arxiv},
+  pages = {3429--3440},
+  issn = {0278-0062, 1558-254X},
+  doi = {10.1109/TMI.2020.2995518},
+  abstract = {Training deep neural networks usually requires a large amount of labeled data to obtain good performance. However, in medical image analysis, obtaining high-quality labels for the data is laborious and expensive, as accurately annotating medical images demands expertise knowledge of the clinicians. In this paper, we present a novel relation-driven semi-supervised framework for medical image classification. It is a consistency-based method which exploits the unlabeled data by encouraging the prediction consistency of given input under perturbations, and leverages a self-ensembling model to produce high-quality consistency targets for the unlabeled data. Considering that human diagnosis often refers to previous analogous cases to make reliable decisions, we introduce a novel sample relation consistency (SRC) paradigm to effectively exploit unlabeled data by modeling the relationship information among different samples. Superior to existing consistency-based methods which simply enforce consistency of individual predictions, our framework explicitly enforces the consistency of semantic relation among different samples under perturbations, encouraging the model to explore extra semantic information from unlabeled data. We have conducted extensive experiments to evaluate our method on two public benchmark medical image classification datasets, i.e.,skin lesion diagnosis with ISIC 2018 challenge and thorax disease classification with ChestX-ray14. Our method outperforms many state-of-the-art semi-supervised learning methods on both single-label and multi-label image classification scenarios.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition},
+  file = {/home/marinbenc/Zotero/storage/X9XF5J7N/Liu et al. - 2020 - Semi-supervised Medical Image Classification with .pdf;/home/marinbenc/Zotero/storage/P2KKX6F6/2005.html}
+}
+
+@inproceedings{NEURIPS2020_d2dc6368,
+  title = {{{3D}} Self-Supervised Methods for Medical Imaging},
+  booktitle = {Advances in Neural Information Processing Systems},
+  author = {Taleb, Aiham and Loetzsch, Winfried and Danz, Noel and Severin, Julius and Gaertner, Thomas and Bergner, Benjamin and Lippert, Christoph},
+  editor = {Larochelle, H. and Ranzato, M. and Hadsell, R. and Balcan, M. F. and Lin, H.},
+  year = {2020},
+  volume = {33},
+  pages = {18158--18172},
+  publisher = {{Curran Associates, Inc.}}
+}
+
 @article{nguyenVinDrCXROpenDataset2021,
   title = {{{VinDr}}-{{CXR}}: {{An}} Open Dataset of Chest {{X}}-Rays with Radiologist's Annotations},
   shorttitle = {{{VinDr}}-{{CXR}}},
@@ -56,6 +157,38 @@
   file = {/home/marinbenc/Zotero/storage/RVUTMC6N/Nguyen et al. - 2021 - VinDr-CXR An open dataset of chest X-rays with ra.pdf;/home/marinbenc/Zotero/storage/G47DPUSK/2012.html}
 }
 
+@incollection{norooziUnsupervisedLearningVisual2016,
+  title = {Unsupervised {{Learning}} of {{Visual Representations}} by {{Solving Jigsaw Puzzles}}},
+  booktitle = {Computer {{Vision}} \textendash{} {{ECCV}} 2016},
+  author = {Noroozi, Mehdi and Favaro, Paolo},
+  editor = {Leibe, Bastian and Matas, Jiri and Sebe, Nicu and Welling, Max},
+  year = {2016},
+  volume = {9910},
+  pages = {69--84},
+  publisher = {{Springer International Publishing}},
+  address = {{Cham}},
+  doi = {10.1007/978-3-319-46466-4_5},
+  isbn = {978-3-319-46465-7 978-3-319-46466-4},
+  language = {en},
+  file = {/home/marinbenc/Zotero/storage/XSBR7VU9/Noroozi and Favaro - 2016 - Unsupervised Learning of Visual Representations by.pdf}
+}
+
+@article{raghuTransfusionUnderstandingTransfer2019,
+  title = {Transfusion: {{Understanding Transfer Learning}} for {{Medical Imaging}}},
+  shorttitle = {Transfusion},
+  author = {Raghu, Maithra and Zhang, Chiyuan and Kleinberg, Jon and Bengio, Samy},
+  year = {2019},
+  month = oct,
+  journal = {arXiv:1902.07208 [cs, stat]},
+  eprint = {1902.07208},
+  eprinttype = {arxiv},
+  primaryclass = {cs, stat},
+  abstract = {Transfer learning from natural image datasets, particularly ImageNet, using standard large models and corresponding pretrained weights has become a de-facto method for deep learning applications to medical imaging. However, there are fundamental differences in data sizes, features and task specifications between natural image classification and the target medical tasks, and there is little understanding of the effects of transfer. In this paper, we explore properties of transfer learning for medical imaging. A performance evaluation on two large scale medical imaging tasks shows that surprisingly, transfer offers little benefit to performance, and simple, lightweight models can perform comparably to ImageNet architectures. Investigating the learned representations and features, we find that some of the differences from transfer learning are due to the over-parametrization of standard models rather than sophisticated feature reuse. We isolate where useful feature reuse occurs, and outline the implications for more efficient model exploration. We also explore feature independent benefits of transfer arising from weight scalings.},
+  archiveprefix = {arXiv},
+  keywords = {Computer Science - Computer Vision and Pattern Recognition,Computer Science - Machine Learning,Statistics - Machine Learning},
+  file = {/home/marinbenc/Zotero/storage/RY22QYV6/Raghu et al. - 2019 - Transfusion Understanding Transfer Learning for M.pdf;/home/marinbenc/Zotero/storage/UQESKYK8/1902.html}
+}
+
 @article{solovyevWeightedBoxesFusion2021,
   title = {Weighted Boxes Fusion: {{Ensembling}} Boxes from Different Object Detection Models},
   shorttitle = {Weighted Boxes Fusion},
@@ -69,6 +202,36 @@
   doi = {10.1016/j.imavis.2021.104117},
   language = {en},
   file = {/home/marinbenc/Zotero/storage/MA2AFXK9/Solovyev et al. - 2021 - Weighted boxes fusion Ensembling boxes from diffe.pdf}
+}
+
+@incollection{zhouComparingLearnSurpassing2020,
+  title = {Comparing to {{Learn}}: {{Surpassing ImageNet Pretraining}} on {{Radiographs}} by {{Comparing Image Representations}}},
+  shorttitle = {Comparing to {{Learn}}},
+  booktitle = {Medical {{Image Computing}} and {{Computer Assisted Intervention}} \textendash{} {{MICCAI}} 2020},
+  author = {Zhou, Hong-Yu and Yu, Shuang and Bian, Cheng and Hu, Yifan and Ma, Kai and Zheng, Yefeng},
+  editor = {Martel, Anne L. and Abolmaesumi, Purang and Stoyanov, Danail and Mateus, Diana and Zuluaga, Maria A. and Zhou, S. Kevin and Racoceanu, Daniel and Joskowicz, Leo},
+  year = {2020},
+  volume = {12261},
+  pages = {398--407},
+  publisher = {{Springer International Publishing}},
+  address = {{Cham}},
+  doi = {10.1007/978-3-030-59710-8_39},
+  isbn = {978-3-030-59709-2 978-3-030-59710-8},
+  language = {en},
+  file = {/home/marinbenc/Zotero/storage/VPSAG577/Zhou et al. - 2020 - Comparing to Learn Surpassing ImageNet Pretrainin.pdf}
+}
+
+@article{ZHU2020101746,
+  title = {Rubik's {{Cube}}+: {{A}} Self-Supervised Feature Learning Framework for {{3D}} Medical Image Analysis},
+  author = {Zhu, Jiuwen and Li, Yuexiang and Hu, Yifan and Ma, Kai and Zhou, S. Kevin and Zheng, Yefeng},
+  year = {2020},
+  journal = {Medical Image Analysis},
+  volume = {64},
+  pages = {101746},
+  issn = {1361-8415},
+  doi = {10.1016/j.media.2020.101746},
+  abstract = {Due to the development of deep learning, an increasing number of research works have been proposed to establish automated analysis systems for 3D volumetric medical data to improve the quality of patient care. However, it is challenging to obtain a large number of annotated 3D medical data needed to train a neural network well, as such manual annotation by physicians is time consuming and laborious. Self-supervised learning is one of the potential solutions to mitigate the strong requirement of data annotation by deeply exploiting raw data information. In this paper, we propose a novel self-supervised learning framework for volumetric medical data. Specifically, we propose a pretext task, i.e., Rubik's cube+, to pre-train 3D neural networks. The pretext task involves three operations, namely cube ordering, cube rotating and cube masking, forcing networks to learn translation and rotation invariant features from the original 3D medical data, and tolerate the noise of the data at the same time. Compared to the strategy of training from scratch, fine-tuning from the Rubik's cube+ pre-trained weights can remarkablely boost the accuracy of 3D neural networks on various tasks, such as cerebral hemorrhage classification and brain tumor segmentation, without the use of extra data.},
+  keywords = {3D Medical imaging data,Rubik’s cube recovery,Self-supervised learning}
 }
 
 
