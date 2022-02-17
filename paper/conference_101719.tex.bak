@@ -282,28 +282,29 @@ A graphical summary of the class-wise results is shown in Fig. \ref{fig:classwis
 
 The model performs the best at detecting cardiomegaly and aortic enlargement, two classes with a large number of examples and large average object area size. All of the models perform significantly worse at detecting other anomalies. However, by adding pretraining on a small percentage of the data (20\% or fewer) the mAP improves for almost all classes, most significantly for detecting other lesions and infiltration.
 
-We also evaluated our experiments in terms of IoU, and compared the inter-observer IoU between multiple experts and our experiments, as shown in Table \ref{tab:iou}. The original dataset was labeled by a group of three radiologists from a total of 17 radiologists identified as $R1$ through $R17$. In our test dataset, 747 images (85\% of the test dataset) were labeled by both radiologist $R9$ and $R10$, while 750 images (85.4\% of the test dataset) were labeled by both radiologist $R9$ and $R11$. Therefore, we calculate the inter-observer IoU between radiologists $R9$ and $R10$ as well as $R9$ and $R11$, since they represent the majority of the dataset. For calculating the inter-observer IoU, we only take into account labels where the IoU overlap is over 0.2, to avoid counting multiple instances of a class as the same prediction. We calculate the models' IoU metric as the mean of IoUs between each fused ground truth annotation and the maximum-overlap model prediction of the annotation's class.
+We also evaluated our experiments in terms of IoU, and compared the inter-observer IoU between multiple experts and our experiments, as shown in Table \ref{tab:iou}. The original dataset was labeled by a group of three radiologists from a total of 17 radiologists identified as $R1$ through $R17$. In our test dataset, 747 images (85\% of the test dataset) were labeled by both radiologist $R9$ and $R10$, while 750 images (85.4\% of the test dataset) were labeled by both radiologist $R9$ and $R11$. Therefore, we calculate the inter-observer IoU between radiologists $R9$ and $R10$ as well as $R9$ and $R11$, since they represent the majority of the dataset. We calculate the models' IoU metric as the mean of IoUs between each fused ground truth annotation and the maximum-overlap model prediction of the annotation's class.
 
 \begin{table}[h]
 \renewcommand{\arraystretch}{1.3}
-\caption{The inter-observer IoU between radiologist $R9$ and radiologists $R10$ and $R11$, as well as the mean IoU of the model's predictions, when taking the prediction with the highest overlap with fused ground truth annotations.}
-\label{tab:iou}
+% TODO: Cite COCO and PASCAL VOC?
+\caption{The inter-observer IoU between radiologist $R9$ and radiologists $R10$ and $R11$, as well as the mean IoU of the model's predictions, when taking the prediction with the highest overlap with ground truth annotations.}
+\label{tab:results}
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
-& mean IoU & $\sigma$ \\ \hline
-R09 vs R10 & 0.580 & 0.284 \\ \hline
-R09 vs R11 & 0.674 & 0.149 \\ \hline
-Baseline & 0.565 & 0.309 \\ \hline
-Pretrained 10\% & 0.566 & 0.309 \\ \hline
-Pretrained 20\% & 0.565 & 0.308 \\ \hline
-Pretrained 30\% & 0.555 & 0.312 \\ \hline
-Pretrained 40\% & 0.545 & 0.316 \\ \hline
-Pretrained 50\% & 0.536 & 0.319 \\ \hline
-Pretrained 60\% & 0.527 & 0.324 \\ \hline
-Pretrained 70\% & 0.507 & 0.331 \\ \hline
-Pretrained 80\% & 0.479 & 0.336 \\ \hline
-Pretrained 90\% & 0.438 & 0.343 \\ \hline
+& mean IoU $\sigma$ \\
+R09 vs R10 & 0.129 & 0.278 & 0.021 & 0.412 & 0.154 & 3075 \\ \hline
+SSL 10\% & \textbf{0.142} & 0.284 & \textbf{0.026} & \textbf{0.413} & 0.156 & 2767 \\ \hline
+SSL 20\% & 0.139 & \textbf{0.292} & 0.020 & 0.412 & \textbf{0.158} & 2460 \\ \hline
+SSL 30\% & 0.130 & 0.268 & 0.014 & 0.402 & 0.146 & 2152 \\ \hline
+SSL 40\% & 0.123 & 0.272 & 0.014 & 0.394 & 0.131 & 1845 \\ \hline
+\rowcolor{LightGray}
+SSL 50\% & 0.109 & 0.248 & 0.011 & 0.387 & 0.131 & 1537 \\ \hline
+SSL 60\% & 0.104 & 0.230 & 0.011 & 0.378 & 0.120 & 1230 \\ \hline
+SSL 70\% & 0.095 & 0.202 & 0.007 & 0.363 & 0.108 & 922 \\ \hline
+SSL 80\% & 0.081 & 0.178 & 0.006 & 0.338 & 0.089 & 615 \\ \hline
+SSL 90\% & 0.060 & 0.135 & 0.003 & 0.303 & 0.064 & 307 \\
+\hline
 \end{tabular}
 \end{table}
 
