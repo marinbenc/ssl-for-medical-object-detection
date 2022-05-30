@@ -27,6 +27,11 @@ G.~Litjens, T.~Kooi, B.~E. Bejnordi, A.~A.~A. Setio, F.~Ciompi, M.~Ghafoorian,
   deep learning in medical image analysis,'' \emph{Medical Image Analysis},
   vol.~42, pp. 60--88, Dec. 2017.
 
+\bibitem{luoIntelligentSolutionsChest2021}
+Y.~Luo, Y.~Zhang, X.~Sun, H.~Dai, and X.~Chen, ``Intelligent {{Solutions}} in
+  {{Chest Abnormality Detection Based}} on {{YOLOv5}} and {{ResNet50}},''
+  \emph{Journal of Healthcare Engineering}, vol. 2021, pp. 1--11, Oct. 2021.
+
 \bibitem{raghuTransfusionUnderstandingTransfer2019}
 M.~Raghu, C.~Zhang, J.~Kleinberg, and S.~Bengio, ``Transfusion: {{Understanding
   Transfer Learning}} for {{Medical Imaging}},'' \emph{arXiv:1902.07208 [cs,
@@ -128,5 +133,16 @@ S.~Ren, K.~He, R.~B. Girshick, and J.~Sun, ``Faster {{R-CNN}}: {{Towards}}
 K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``Deep residual learning for image
   recognition,'' in \emph{Proceedings of the {{IEEE}} Conference on Computer
   Vision and Pattern Recognition ({{CVPR}})}, Jun. 2016.
+
+\bibitem{loshchilovSGDRStochasticGradient2017}
+I.~Loshchilov and F.~Hutter, ``{{SGDR}}: {{Stochastic Gradient Descent}} with
+  {{Warm Restarts}},'' \emph{arXiv:1608.03983 [cs, math]}, May 2017.
+
+\bibitem{kisantalAugmentationSmallObject2019}
+M.~Kisantal, Z.~Wojna, J.~Murawski, J.~Naruniec, and K.~Cho, ``Augmentation for
+  small object detection,'' in \emph{9th {{International Conference}} on
+  {{Advances}} in {{Computing}} and {{Information Technology}} ({{ACITY}}
+  2019)}.\hskip 1em plus 0.5em minus 0.4em\relax {Aircc Publishing
+  Corporation}, Dec. 2019, pp. 119--133.
 
 \end{thebibliography}
