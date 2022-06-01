@@ -8,12 +8,22 @@
 \usepackage{textcomp}
 \usepackage{xcolor}
 \usepackage{color, colortbl}
+\usepackage{hyperref}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=cyan,
+    pdfpagemode=FullScreen,
+    pdftitle={Self-supervised Learning as a Means to Reduce the Need for Labeled Data in Medical Image Analysis}
+    }
+\urlstyle{same}
 
 \bibliographystyle{IEEEtran}
 
 \begin{document}
 
-\title{Using self-supervised learning to decrease the need for labeled data in medical image object detection\\
+\title{Self-supervised Learning as a Means to Reduce the Need for Labeled Data in Medical Image Analysis\\
 \thanks{This work was supported in part by the Croatian Science Foundation under Project UIP-2017-05-4968.}
 }
 
@@ -27,110 +37,118 @@ Ghent University, Ghent, Belgium}}
 \maketitle
 
 \begin{abstract}
-This document is a model and instructions for \LaTeX.
-This and the IEEEtran.cls file define the components of your paper [title, text, heads, etc.]. *CRITICAL: Do Not Use Symbols, Special Characters, Footnotes, 
-or Math in Paper Title or Abstract.
 \end{abstract}
+One of the largest problems in medical image processing is the lack of annotated data. Labeling 
+medical images often requires highly trained experts and can be a time-consuming process. In this 
+paper, we evaluate a method of reducing the need for labeled data in medical image object detection 
+by using self-supervised neural network pretraining. We use a dataset of chest X-ray 
+images with bounding box labels for 13 different classes of anomalies. The networks are pretrained 
+on a percentage of the dataset without labels and then fine-tuned on the rest of the dataset. We 
+show that it is possible to achieve similar performance to a fully supervised model in terms of mean average 
+precision and accuracy with only 60\% of the labeled data. We also show 
+that it is possible to increase the maximum performance of a fully-supervised model by adding a 
+self-supervised pretraining step, and this effect can be observed with even a small amount of 
+unlabeled data for pretraining.
 
 \begin{IEEEkeywords}
-component, formatting, style, styling, insert
+contrastive learning, deep learning, medical image processing, object detection, self-supervised learning
 \end{IEEEkeywords}
-
-
 
 \section{Introduction}
 
-One of the largest problems in medical image processing is the lack of annotated data. To function 
-robustly and to show their generalizability potential, deep learning networks require a large 
+In medical image processing, the lack of annotated data is a common obstacle for deep learning models. To function 
+robustly and to show their generalizability potential, deep neural networks require a large 
 amount of annotated images \cite{litjensSurveyDeepLearning2017}. However, 
-annotating medical imaging is often time-consuming, precise work. There is a need to improve the 
+annotating medical images often requires time-consuming, tedious work from trained clinitians. 
+Hence, there is a huge need to improve the 
 data efficiency and robustness of deep learning networks for medical image processing
 trained on smaller datasets. Furthermore, 
 there is a need to make the labeling process faster to save experts' time. This paper presents a 
-step towards both of those goals. The primary contribution of this paper is the evaluation a method 
-which uses self-supervised learning 
+step towards both of these goals. The primary contribution of the paper is the evaluation of a method 
+that uses self-supervised learning 
 to extract salient information from \textit{unlabeled} images which can then be used to more 
-easily train a object detection deep learning network on a more limited dataset 
+easily train an object detection model on a more limited dataset 
 of \textit{labeled} images.
 
-Improving data efficiency in medical object detection is of particular importance. 
-In terms of labeling complexity, it is 
-simpler and quicker to label a dataset with bounding boxes than to label each instance as is 
-needed for semantic segmentation. In a lot of medical imaging tasks, a precise semantic 
-segmentation map is not required, and a bounding box communicates sufficient information for 
-further diagnosis, treatment or research on a given image. By improving data efficiency for 
-bounding box labels, we hope to increase their usefulness and thus save time by allowing experts 
-to use bounding box labels in place of semantic segmentation maps for some medical image processing
-tasks.
-
-In this paper, we show that it is possible to improve the performance of an object detection model
+We show that it is possible to improve the performance of an object detection model
 for medical images by utilizing self-supervised learning in a pretraining phase. In addition, we
 also show that it is possible to achieve similar performance to a fully supervised model with
-only 60\% of the labeled data by utilizing self-supervised pretraining.
+only 60\% of the labeled data. The code for all of the
+experiments in this paper is available at \href{https://github.com/marinbenc/ssl-for-medical-object-detection}{github.com/marinbenc/ssl-for-medical-object-detection}.
 
 \subsection{Related work}
 
+There are very few papers published that present methods for object detection in 
+chest X-ray images. One notable paper similar to our work is the one by Luo et al.
+\cite{luoIntelligentSolutionsChest2021}. They use the same dataset as the experiments
+presented in this paper and train a YOLOv5 model with a ResNet50-based backbone.
+They achieve results similar to the ones in our experiments,
+however, they do not employ any kind of unsupervised learning and train on the full labeled dataset. 
+The goal of this paper
+is not to beat the state of the art performance, but rather to show if similar results could
+be achieved with much less labeled data.
+
+\subsubsection{Improving data efficiency of neural nets}
+
 There are several ways to try to utilize unlabeled data or data prepared for other tasks to improve
-the data efficiency of medical image processing. The most common approach in medical image tasks is
-to use transfer learning on large image datasets 
-such as ImageNet, however Raghu et al. \cite{raghuTransfusionUnderstandingTransfer2019} found that
-this provides little benefit in medical image processing tasks in terms of performance, but does
+the data efficiency of medical image processing, including semi-supervised learning, transfer learning
+and, more recently, self-supervised learning. 
+While transfer learning on large image datasets 
+such as ImageNet is very common in medical image processing, 
+Raghu et al. \cite{raghuTransfusionUnderstandingTransfer2019} found that
+this provides little benefit in terms of model performance, but does
 improve convergence speed during training.
 
-Some works use semi-supervised learning to utilize an unlabeled dataset to improve
-performance of a model. These approaches generally work by utilizing statistical features
-of an unlabeled dataset while simultaneously training on a labeled dataset. The unlabeled
+Another way to utilize an unlabeled dataset to improve
+performance of a model is semi-supervised learning, where the unlabeled
 dataset is mined for soft signals to nudge the model towards better overall performance.
 One such example is the one by Liu et al. \cite{liuSemisupervisedMedicalImage2020} where
 they present a semi-supervised learning method for medical image classification using
 a combination of unlabeled and labeled data from the same domain.
 
-TODO OBJECT DETECTION HINDAWI PAPER.
-
 \subsubsection{Self-supervised learning}
 
-Recently more and more papers use self-supervised learning to pre-train neural networks on
-unlabeled data, and then fine tune the networks on the available labeled data.
-Self-supervised learning is a method of unsupervised neural network training where a
-an encoder is trained to learn salient features or embeddings of an input. The
-goal is to train an encoder which will understand useful features for a downstream
-task such as object detection, classification or similar. Self-supervised learning has
+Recently more and more papers use self-supervised learning (SSL) to pre-train neural networks on
+unlabeled data, and then fine-tune the networks on the available labeled data.
+SSL is a method of unsupervised neural network training where the
+goal is to train an encoder that will understand useful features for a downstream
+task such as object detection, classification, or similar. SSL has
 been shown to improve data efficiency
 \cite{chenSimpleFrameworkContrastive2020} as well as robustness to dataset imbalance
 \cite{liuSelfsupervisedLearningMore2021}.
 
-There are several approaches of training the encoder such that it learns useful features.
-One approach is to use a constructed task which uses the unlabeled data and for which one
-can automatically obtain the correct solution, so that the correct solution can be used
+There are several approaches to training the encoder such that it learns useful features.
+One approach is to use a constructed \textit{pretext} task for which one
+can automatically obtain the correct solution from unlabeled data so that the correct solution can be used
 for supervised training. An example of this approach is presented by Noroozi and Favaro 
 \cite{norooziUnsupervisedLearningVisual2016} where the neural network is trained to 
 solve a jigsaw constructed from an unlabeled dataset.
 
-Recently, a more common approach to self-supervised pretraining is contrastive learning.
+Recently, a more common approach to SSL is contrastive learning.
 In contrastive learning, the encoder is trained to minimize the distance between feature
-vectors of positive examples, and maximize the distance between negative examples. The
+vectors of positive examples and maximize the distance between negative examples. The
 positive examples are constructed in an unsupervised manner by e.g. randomly augmenting
-and image twice, thus producing two examples for which the feature vectors should be
+an image twice, thus producing two examples for which the feature vectors should be
 similar. Among others, notable examples of such approaches are SimCLR 
 \cite{chenSimpleFrameworkContrastive2020} and MoCo \cite{he2019moco}.
 
 \subsubsection{Self-supervised learning in medical images}
 
-There are a number of papers both the constructed task approach 
-(\cite{baiSelfSupervisedLearningCardiac2019}, \cite{ZHU2020101746}) as well as contrastive
-learning (\cite{zhouComparingLearnSurpassing2020}). There are also a number of papers
-that evaluate self-supervised pretraining on an unlabeled subset of the data for medical
+Due to its potential to improve data efficiency, SSL is a promising
+approach for medical image processing. Several recent
+papers proposed SSL methods both using the pretext task approach 
+\cite{baiSelfSupervisedLearningCardiac2019, ZHU2020101746} as well as contrastive
+learning \cite{zhouComparingLearnSurpassing2020}. Several papers evaluate self-supervised 
+pretraining on an unlabeled subset of the data for medical
 imaging tasks. Taleb et al. \cite{NEURIPS2020_d2dc6368} evaluate a variety of 
 self-supervised pretraining approaches
 for medical image segmentation in 3D MRI and CT images as well as classification on 2D 
-fundus photograpy images. They use unlabeled data of the same modality but from a 
+fundus photography images. They use unlabeled data of the same modality but from a 
 different corpus. Azizi et al. \cite{aziziBigSelfSupervisedModels2021} introduce a
 novel contrastive learning method and evaluate it at various percentages of used
-dataset labels on dermatology and chest X-ray classification. However, to the
-best of our knowledge the are currently no papers which evaluate self-supervised 
+dataset labels on dermatology and chest X-ray classification. However, to 
+our knowledge the are currently no papers that evaluate self-supervised 
 pretraining for object detection tasks in medical images.
-
-
 
 \section{Dataset description and demographics}\label{dataset}
 
@@ -138,114 +156,116 @@ The dataset used in this paper is a dataset of 15,000 labeled chest radiographs 
 described in more detail in \cite{nguyenVinDrCXROpenDataset2021}. While the original dataset 
 contains 3,000 additional test images, we were not able to obtain the labels for these images, and 
 they were not used in this paper. Each scan of the dataset was labeled by three separate 
-radiologists.  The dataset was collected from two major Vietnamese hospitals. 
-
-We chose this dataset as a good indicator of the generalizability of the findings in this paper 
-due to several reasons. Firstly, to our knowledge, this is the largest radiograph dataset with 
-bounding box labels for each finding. Secondly, having multiple labels for each image allows us to 
-perform a large variety of statistical evaluation methods, such as comparing the inter-observer 
-variability. Having multiple labels also allows us to use automatic methods to find a concensus 
-between them, possibly leading to less noisy annotations.
+radiologists. The dataset was collected from two major Vietnamese hospitals and is to our
+knowledge the largest dataset for radiograph object detection. Therefore, it is a good indicator
+for the generalizability of our experiments on other radiograph datasets.
 
 \subsection{Data preparation}
 
 Each DICOM image from the dataset was resized to a resolution of 512 $\times$ 512 pixels. We 
-discard all examples for which there is no anomaly found (examples labeled as "no finding"). After 
+discard all examples for which there is no anomaly found (examples labeled as ``no finding''). After 
 discarding, we are left with a total of 4,394 images. We randomly split this dataset into a 
-training set (70\%, 3075 images), validation set (10\%, 440 images) and a test set (20\%, 878 
+training set (70\%, 3,075 images), validation set (10\%, 440 images) and a test set (20\%, 878 
 images). The training set was used to train the models, the validation set was used to tune the 
 model hyperparameters and determine when to stop training, and the test set is used for final 
-evaluation. The model did not have access to the test set during training.
-
-The original dataset differentiates 14 different classes, one of which is the "no finding" class. 
-We discard this class, resulting in 13 possible class labels. The class distribution of the full 
-dataset is shown in Fig. \ref{fig:class-balance}.
+evaluation. The model did not have access to the test set during training. The class distribution
+of the full dataset is shown in Fig. \ref{fig:class-balance}. During training, each image had 
+a 50\% chance of being flipped horizontally.
 
 Each image can have one or more 
 labels from multiple experts, and these labels often overlap. To produce the least noisy labels, 
-we fused overlapping labels from multiple experts into one label by finding an average rectangle 
-of several overlapping rectanges. To determine if two rectangles are overlapping, an intersection-over-union 
-(IoU) threshold of 20\% is used. A rectangle ${R_i}$ is defined by its top-left corner 
-$(X_{i1}, Y_{i1})$ and its bottom-right corner $(X_{i2}, Y_{i2})$. An average rectangle $\bar{R}$ 
-defined by coordinates $(\bar{X_{1}}, \bar{Y_{1}})$ and $(\bar{X_{2}}, \bar{Y_{2}})$ where each 
-coordinate is an average of the appropriate coordinates in all of the rectangles to be averaged.
-This approach is based on weighted boxes fusion 
-described in \cite{solovyevWeightedBoxesFusion2021}, but modified such that each bounding box has 
+we average overlapping bounding boxes of the same class into one bounding box. 
+To determine if two boxes are overlapping, an intersection-over-union 
+(IoU) threshold of 20\% is used. This approach is based on weighted boxes fusion 
+described in \cite{solovyevWeightedBoxesFusion2021} but modified such that each bounding box has 
 equal weight and confidence since they were manually labeled by an expert. An example of fused 
 bounding boxes is shown in Fig. \ref{fig:wbf}.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{images/wbf}
 \caption{Examples of bounding box averaging. The images on the left show the original bounding boxes, while the images on the right show fused bounding boxes which are used in our experiments.}
 \label{fig:wbf}
 \end{figure}
 
-% TODO Figure wbf
-
 \section{Methods}
 
-The main goal of this paper is to analyze gow self-supervised model pre-training affects data efficiency for object detection in medical images. Therefore, we first train a baseline deep learning model with no pre-traning and on the full labeled traning dataset following a standard approach for this type of problem. This model will be used as a point of comparison to more objectively evaluate the pre-trained models.
+A summary of our approach is shown in Fig. \ref{fig:dataset-split-summary}. 
+The main goal of this paper is to analyze how self-supervised pretraining affects data efficiency for object detection 
+in medical images. Therefore, we first train a \textit{baseline} deep learning model with no pretraining and on the full labeled 
+training dataset following a standard approach for this type of problem, described later in this section. 
+This model will be used as a point of comparison to more objectively evaluate the pre-trained models.
 
-To evaluate the pre-training, we randomly split the traning dataset into two separate datasets, a pre-traning and fine-tuning dataset. For the pre-traning dataset we discard all class labels, as this dataset will be used to pre-train the model using self-supervised learning on unlabeled data. The fine-tuning dataset will then be used to fine-tune the pre-trained model using standard supervised learning. We train nine different pre-trained models in total, ranging from 10\% to 90\% of the total training set in the unlabeled pre-train dataset, in increments of 10\%. A summary of our approach is shown in \ref{fig:dataset-split-summary}.
+To evaluate the pretraining, we randomly split the training dataset into two separate datasets, a pretraining and fine-tuning 
+dataset. For the pretraining dataset, we discard all class labels, as this dataset will be used to pretrain the model using 
+self-supervised learning on unlabeled data. The fine-tuning dataset will then be used to fine-tune the pre-trained model using 
+standard supervised learning. We train nine different pre-trained models in total, ranging from 10\% to 90\% of the total 
+training set in the unlabeled pre-train dataset, in increments of 10\%.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{images/dataset-split-summary}
-\caption{A summary of our experiments. A percentage of the training dataset is moved to the pre-training dataset and models are pre-trained using the pre-training datasets and then fine tuned with the rest of the training data. The pre-training datasets are unlabeled. A separate baseline model is trained using the full labeled dataset.}
+\caption{A summary of our approach. A percentage of the training dataset is moved to the pretraining dataset and used to pretrain the model, which is then fine-tuned with the rest of the training data. The pretraining datasets are unlabeled. A separate baseline model is trained using the full labeled dataset.}
 \label{fig:dataset-split-summary}
 \end{figure}
 
 \subsection{Balancing the dataset}
 
-As shown in Figure \ref{fig:class-balance} the dataset is highly imbalanced. To improve class-balance during training we oversample examples with less-represented classes. We use the oversampling approach described in \cite{gupta2019lvis}. The general approach is as follows:
+As shown in Fig. \ref{fig:class-balance}, the dataset is highly imbalanced. To improve class balance during training we oversample examples with less-
+represented classes. We use the oversampling approach described in \cite{gupta2019lvis}, with an oversampling threshold of 0.4. This balancing is performed 
+online during training and only on the training set. We found that balancing the dataset in this way significantly improved the mean average precision when 
+averaged across all classes.
 
-\begin{enumerate}
-\item For each class $c$, compute it's frequency $f(c)$ in the training set.
-\item Compute a class repeat factor $r(c) = max(1, \sqrt{{t}/{f(c)}})$, where $t$ is a threshold value empericially set to 0.4 in our experiments. The value of 0.4 produced the maximum validation mean average precision for the baseline model.
-\item For each image $I$, compute an image repeat factor $r(I) = C * r(c)$ where $C = max(r(c_i))$ for each class $c_i$ in image $I$.
-\end{enumerate}
-
-This balancing is performed on-line during training and only on the training set. We found that balancing the dataset in this way significantly improved the mean average precision when averaged across all classes.
-
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{images/rebalace}
-\caption{A histogram of the class balance of the original dataset (by number of images containing the class), and the same histogram for our oversampled dataset.}
+\caption{A histogram of the class balance of the original dataset (by number of images containing the class), and the histogram of the oversampled dataset used for training.}
 \label{fig:class-balance}
 \end{figure}
 
 \subsection{Baseline model details}
 
-For an objective and fair comparison, we train a baseline model using a standard deep learning-based approach for object detection. We use a Faster R-CNN-based model \cite{DBLP:conf/nips/RenHGS15} with a ResNet50 encoder \cite{He_2016_CVPR}. The model is initialized using pre-trained weights trained on the COCO dataset for 12 epochs, a batch size of 2 and using the SGD optimizer with a learning rate of 0.0002, momentum of 0.9 and a weight decay of 0.0001.
+For an objective and fair comparison, we train a baseline model using a standard 
+deep learning-based approach for object detection. We use a Faster R-CNN-based 
+model \cite{DBLP:conf/nips/RenHGS15} with a ResNet-50 encoder \cite{He_2016_CVPR}. 
+The baseline model is initialized using pretrained weights trained on the COCO dataset for 
+12 epochs, a batch size of 2, and using the SGD optimizer with a learning rate of 
+0.0002, the momentum of 0.9, and a weight decay of 0.0001. Training
+is done by using the SGD optimizer with a learning rate of 0.001, a momentum of 0.9, a weight decay 
+of 0.0001, and a batch size of 8. The baseline model converged in 15 epochs. We use the cross-entropy loss
+for the classes and the L1 loss for the bounding boxes.
 
 \subsection{Pretraining model details}
 
-The pretraining model we use is a SimCLR-based model \cite{chenSimpleFrameworkContrastive2020} to pre-train a ResNet-50 backbone, the same backbone used in the baseline model. We train the SimCLR model (described later in this section) using the unlabeled pre-training dataset. We then use the pre-trained backbone in the same model as our baseline model and fine-tune the final model on the fine-tuning dataset. The result is a model similar to our backbone model but trained on fewer labeled data.
-
-SimCLR uses contrastive learning where an example image is augmented randomly twice and each augmentation is fed into a separate encoder branch, where the branches use shared weights. The network outputs two feature maps, one for each augmentation. The loss function measures the difference between these two feature maps. The closer the two feature maps are, the lower the loss. This ensures that two augmentations from the same example will produce similar feature maps, thus making the network learn salient features which are invariant to the chosen augmentations.
+The pretraining model we use is a SimCLR-based model \cite{chenSimpleFrameworkContrastive2020} to pre-train a ResNet-50 backbone, the same backbone used in the baseline model. We train the SimCLR model (described later in this section) using the unlabeled pretraining dataset. We then use the pre-trained backbone in the same model as our baseline model and fine-tune the final model on the fine-tuning dataset. The result is a model similar to our backbone model but trained on fewer labeled data.
 
 In our experiments, we use the following augmentations for SimCLR training:
 
 \begin{enumerate}
 \item A random crop and resize of the original image by a factor of 0.2 to 1.
 \item A random horizontal flip (with a 50\% chance).
-\item A random Gaussian blur with $\sigma$ between 0.1 and and 2, and a kernel size of 21.
-\item A random amount of Gaussian noise with $\sigma$ being a random number between 12.5\% and 25\% of the mean image pixel value.
+\item A random Gaussian blur with $\sigma$ between 0.1 and 2, and a kernel size of 21.
+\item A random amount of Gaussian noise with $\sigma$ between 12.5\% and 25\% of the mean image pixel value.
 \end{enumerate}
 
 In addition, each training and validation image has histogram normalization applied.
 
+We pretrain the models using the SGD optimizer with a learning rate of 0.001, a 
+momentum of 0.9, and a weight decay of $5\cdot10^{-4}$. We also use a cosine 
+annealing learning rate as described in \cite{loshchilovSGDRStochasticGradient2017}. 
+For pretraining we use the NTXent loss as described in  \cite{chenSimpleFrameworkContrastive2020} with a temperature of 0.5.
+The pretraining was stopped after 30 epochs in all experiments.
+
 \section{Results}\label{sec2}
 
-A summary of the results of our experiments is shown on Table \ref{tab:results}. All of the results in this section are calculated on the testing dataset. Our main evaluation metrics are the mean average precision (mAP), averaged across all classes and IoU thresholds from 0.5 to 0.95 in 0.05 intervals (mAP@[.5, .95]), as is standard for benchmarking the COCO dataset. We also calculate the mAP at a fixed IoU of 0.5 (mAP@0.5), which is standard for evaluating models on the PASCAL VOC dataset. These metrics are also calculated class-wise. In addition, we calculate the average recall given 100 detections per image (AR@100).
+A summary of the results of our experiments is shown in Table \ref{tab:results}. All of the results in this section are calculated on the testing dataset. Our main evaluation metrics are the mean average precision (mAP), averaged across all classes and IoU thresholds from 0.5 to 0.95 in 0.05 intervals (mAP@[.5, .95]), as is standard for benchmarking the COCO dataset. We also calculate the mAP at a fixed IoU of 0.5 (mAP@0.5), which is standard for evaluating models on the PASCAL VOC dataset. In addition, we calculate the average recall given 100 detections per image (AR@100). We separately calculate the mAP[.5, .95] as well as the AR@1000 for small objects (less than 32 pixels$^2$).
 
 \definecolor{LightGray}{gray}{0.9}
 
-\begin{table}[h]
+\begin{table}[t]
 \renewcommand{\arraystretch}{1.3}
 % TODO: Cite COCO and PASCAL VOC?
-\caption{A summary of the results of our experiments. mAP is the mean average precision at IoU values from 0.5 tp 0.95 at 0.05 (mAP@[.5, .95]) increments across all classes, the standard metric for the COCO benchmark. mAP50 is the mAP at IoU = 50\% (mAP@0.5), the standard metric for the PASCAL VOC benchmark. mAP small is the mAP@[.5, .95] for objects with an area smaller than 32 pixels$^2$. AR is the average recall given 100 detections per image (AR@100). AR small is the same as AR but only for objects with an area smaller than 32 pixels$^2$. Training images is the total number of labeled training examples available to the model.}
+\caption{A summary of the results of our experiments. The details of the metrics are described in \ref{sec2}. Training images is the total number of labeled training examples available to the model.}
 \label{tab:results}
 \centering
 \begin{tabular}{|c|c|c|c|c|c|c|c}
@@ -267,26 +287,34 @@ SSL 90\% & 0.060 & 0.135 & 0.003 & 0.303 & 0.064 & 307 \\
 \end{tabular}
 \end{table}
 
-The baseline model, trained on all of the labeled data, achieves an mAP of 0.129. By adding pretraining on 10\% of the data (i.e. removing 10\% of the labels) the mAP increases to 0.142. This is the best-performing model in our experiments. In addition, by additing pretraining on a small percentage of the dataset (20\% or fewer) the performance improves for all of the metrics we calculated. However, even with just 60\% of the labeled data we achieve an mAP of 0.123, only slightly smaller than the baseline model. In terms of percentages, with only 60\% of the labels we still achieve more than 95\% of the performance of the baseline model in terms of mAP. Similar results can be see in terms of recall — the baseline model achieves an AR of 0.412 while with 60\% of the labels we achieve an AR of 0.394, more than 95\% of the base model's AR.
+The baseline model, trained on all of the labeled data, achieves an mAP of 0.129. In addition, by adding pretraining on a small percentage of the dataset (20\% or fewer) the performance improves for all of the metrics we calculated. For instance, when pretraining on 10\% of the data (i.e. removing 10\% of the labels) the mAP increases to 0.142. This is the best-performing model in our experiments. However, even with just 60\% of the labeled data, we achieve an mAP of 0.123, more than 95\% of the performance of the baseline model in terms of mAP. Similar results can be seen in terms of recall — the baseline model achieves an average recall of 0.412 while with 60\% of the labels we achieve an AR of 0.394, more than 95\% of the base model's AR.
 
-However, the differences are larger when looking at small objects. While the baseline model achieves a 0.021 mAP for small objects, the model trained on 60\% of the labeled images achieves a small objects mAP of 0.014, 66.66\% of the baseline model. Similarly, the model trained on 60\% of the labeled images achieves a small object AR of 0.131, 85\% of the baseline model's small object AR of 0.154.
+However, the differences are larger when looking at small objects. While the baseline model achieves a 0.021 mAP for small objects, the model trained on 60\% of the labeled images achieves a small objects mAP of 0.014, 66.66\% of the baseline model. Similarly, the model trained on 60\% of the labeled images achieves a small object AR of 0.131, 85\% of the baseline model's small object AR of 0.154. 
 
-A graphical summary of the class-wise results is shown in Fig. \ref{fig:classwise-map}. The performance on most classes drops off linearly between the baseline model and the model trained on 60\% of the labels data. The dropoff becomes more significant after training on less than 60\% of the labels. In all cases the mAP at 60\% of the labeled data is highly correlated with the mAP across all classes as described earlier in the section, and the same conclusions apply to all classes.
+A graphical summary of the class-wise results is shown in Fig. \ref{fig:classwise-map}. The performance on most classes drops off linearly between the baseline model and the model trained on 60\% of the labels data. The dropoff becomes more significant after training on less than 60\% of the labels. In all cases, the mAP at 60\% of the labeled data is highly correlated with the mAP across all classes as described earlier in the section, and the same conclusions apply to all classes.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{images/map_graph}
-\caption{The mean average precision (mAP@[.5, .95] across different percentages of labeled data for different classes in the dataset. The model at 100\% of labeled data is the baseline model.}
+\caption{The mean average precision (mAP@[.5, .95]) across different percentages of labeled data for different classes in the dataset. The model at 100\% of labeled data is the baseline model.}
 \label{fig:classwise-map}
 \end{figure}
 
-The model performs the best at detecting cardiomegaly and aortic enlargement, two classes with a large number of examples and large average object area size. All of the models perform significantly worse at detecting other anomalies. However, by adding pretraining on a small percentage of the data (20\% or fewer) the mAP improves for almost all classes, most significantly for detecting other lesions and infiltration.
+The model performs the best at detecting cardiomegaly and aortic enlargement, two classes with a large number of examples and a large average object area size. 
+All of the models perform significantly worse at detecting other anomalies. However, by adding pretraining on a small percentage of the data (20\% or fewer) 
+the mAP improves for almost all classes, most significantly for detecting other lesions and infiltration.
 
-We also evaluated our experiments in terms of IoU, and compared the inter-observer IoU between multiple experts and our experiments, as shown in Table \ref{tab:iou}. The original dataset was labeled by a group of three radiologists from a total of 17 radiologists identified as $R1$ through $R17$. In our test dataset, 747 images (85\% of the test dataset) were labeled by both radiologist $R9$ and $R10$, while 750 images (85.4\% of the test dataset) were labeled by both radiologist $R9$ and $R11$. Therefore, we calculate the inter-observer IoU between radiologists $R9$ and $R10$ as well as $R9$ and $R11$, since they represent the majority of the dataset. For calculating the inter-observer IoU, we only take into account labels where the IoU overlap is over 0.2, to avoid counting multiple instances of a class as the same prediction. We calculate the models' IoU metric as the mean of IoUs between each fused ground truth annotation and the maximum-overlap model prediction of the annotation's class.
+We also evaluated our experiments in terms of IoU, and compared the inter-observer IoU between multiple experts and our experiments, as shown in Table 
+\ref{tab:iou}. The original dataset was labeled by a group of three radiologists from a total of 17 radiologists identified as $R1$ through $R17$. In our test 
+dataset, 747 images (85\% of the test dataset) were labeled by both radiologists $R9$ and $R10$, while 750 images (85.4\% of the test dataset) were labeled by 
+both radiologists $R9$ and $R11$. Therefore, we calculate the inter-observer IoU between radiologists $R9$ and $R10$ as well as $R9$ and $R11$, since they 
+represent the majority of the dataset. For calculating the inter-observer IoU, we only take into account labels of the same class where the IoU overlap is over 0.2, to avoid 
+counting multiple instances of a class as the same prediction. We calculate the models' IoU metric as the mean of IoUs between each fused ground truth 
+annotation and the maximum-overlap model prediction of the annotation's class.
 
-\begin{table}[h]
+\begin{table}[b]
 \renewcommand{\arraystretch}{1.3}
-\caption{The inter-observer IoU between radiologist $R9$ and radiologists $R10$ and $R11$, as well as the mean IoU of the model's predictions, when taking the prediction with the highest overlap with fused ground truth annotations.}
+\caption{The inter-observer IoU between radiologist $R9$ and radiologists $R10$ and $R11$, as well as the mean IoU of the model's predictions.}
 \label{tab:iou}
 \centering
 \begin{tabular}{|c|c|c|}
@@ -295,27 +323,51 @@ We also evaluated our experiments in terms of IoU, and compared the inter-observ
 R09 vs R10 & 0.580 & 0.284 \\ \hline
 R09 vs R11 & 0.674 & 0.149 \\ \hline
 Baseline & 0.565 & 0.309 \\ \hline
-Pretrained 10\% & 0.566 & 0.309 \\ \hline
-Pretrained 20\% & 0.565 & 0.308 \\ \hline
-Pretrained 30\% & 0.555 & 0.312 \\ \hline
-Pretrained 40\% & 0.545 & 0.316 \\ \hline
-Pretrained 50\% & 0.536 & 0.319 \\ \hline
-Pretrained 60\% & 0.527 & 0.324 \\ \hline
-Pretrained 70\% & 0.507 & 0.331 \\ \hline
-Pretrained 80\% & 0.479 & 0.336 \\ \hline
-Pretrained 90\% & 0.438 & 0.343 \\ \hline
+SSL 10\% & 0.566 & 0.309 \\ \hline
+SSL 20\% & 0.565 & 0.308 \\ \hline
+SSL 30\% & 0.555 & 0.312 \\ \hline
+SSL 40\% & 0.545 & 0.316 \\ \hline
 \end{tabular}
 \end{table}
 
-\section{Discussion}\label{sec12}
+The inter-observer IoU is between 0.58 and 0.67, while the IoU between ground truth and predicted 
+labels of our baseline model is 0.57, slightly worse than the variability between two human 
+experts. The IoU starts to drop after more than 20\% of the labels are removed. At 60\% of the 
+labels, the IoU is 0.545, more than 96\% of the baseline IoU. Note that the model's IoU is based on 
+the best predictions coming from the model. Under real-world conditions, it is not known which 
+predictions are best and some heuristic is needed which might not always choose the best 
+prediction, so the presented IoU values should be interpreted as best-case scenario IoU values. 
+Still, the relative IoU differences between the baseline and the pretrained models should remain the same.
 
-Discussions should be brief and focused. In some disciplines use of Discussion or `Conclusion' is interchangeable. It is not mandatory to use both. Some journals prefer a section `Results and Discussion' followed by a section `Conclusion'. Please refer to Journal-level guidance for any specific requirements. 
+\section{Discussion and conclusion}\label{sec12}
 
-\section{Conclusion}\label{sec13}
+Our results on medical object detection experiments show that it is possible to use fewer labeled 
+examples and still achieve similar performance by utilizing self-supervised 
+pretraining. All of the global metrics we measured, including average precision and recall as well 
+as IoU, remain within 95\% of the baseline model's performance. The same is true for class-based 
+metrics. In our experiments, using 60\% of labeled data is a good compromise between using fewer 
+labels while still maintaining good object detection performance. We hypothesize that the 
+backbone trained under self-supervised contrastive learning produces more salient feature maps and 
+thus overcomes the lack of labels when compared to the baseline model. 
 
-Conclusions may be used to restate your hypothesis or research question, restate your major findings, explain the relevance and the added value of your work, highlight any limitations of your study, describe future directions for research and recommendations. 
+The biggest performance loss for the self-supervised models is in smaller objects, where the model 
+trained on 60\% of the labeled data achieves less than 65\% of the small object mean average 
+precision of the baseline model. A very common occurrence in deep learning models for 
+object detection is a gap in performance between predicting small and large objects. Smaller objects 
+are less frequent, and cover a smaller area of the image, making it difficult for models to predict 
+them. This problem can be overcome at least in part using augmentation 
+\cite{kisantalAugmentationSmallObject2019}, and it's possible our results could be improved by 
+adding oversampling and small object augmentation to both the training and pretraining steps.
 
-In some disciplines use of Discussion or 'Conclusion' is interchangeable. It is not mandatory to use both. Please refer to Journal-level guidance for any specific requirements. 
+However, at 60\% of labeled data, the model still retains 85\% of the small object recall of the baseline model.
+In medical image processing tasks, recall is often more important than precision as the cost of finding false positives
+is much lower than the cost of missing true positives. Therefore, the reduction in small object detection performance
+is less severe than it appears from the mAP.
+
+We hope that the findings of this paper will lead to enabling more deep learning-based methods in 
+medical object detection with fewer labeled data, as well as increase the performance of existing 
+models trained on small datasets. This paper is also an indicator that self-supervised learning is 
+a very promising avenue for future research in medical image processing.
 
 \bibliography{bibfile.bib}
 
