@@ -23,9 +23,17 @@
 
 \bibitem{litjensSurveyDeepLearning2017}
 G.~Litjens, T.~Kooi, B.~E. Bejnordi, A.~A.~A. Setio, F.~Ciompi, M.~Ghafoorian,
-  J.~A. {van der Laak}, B.~{van Ginneken}, and C.~I. S{\'a}nchez, ``A survey on
-  deep learning in medical image analysis,'' \emph{Medical Image Analysis},
-  vol.~42, pp. 60--88, Dec. 2017.
+  J.~A. {van der Laak}, B.~{van Ginneken}, and C.~I. S{\'a}nchez,
+  ``\BIBforeignlanguage{en}{A survey on deep learning in medical image
+  analysis},'' \emph{\BIBforeignlanguage{en}{Medical Image Analysis}}, vol.~42,
+  pp. 60--88, Dec. 2017.
+
+\bibitem{luoIntelligentSolutionsChest2021}
+Y.~Luo, Y.~Zhang, X.~Sun, H.~Dai, and X.~Chen,
+  ``\BIBforeignlanguage{en}{Intelligent {{Solutions}} in {{Chest Abnormality
+  Detection Based}} on {{YOLOv5}} and {{ResNet50}}},''
+  \emph{\BIBforeignlanguage{en}{Journal of Healthcare Engineering}}, vol. 2021,
+  pp. 1--11, Oct. 2021.
 
 \bibitem{raghuTransfusionUnderstandingTransfer2019}
 M.~Raghu, C.~Zhang, J.~Kleinberg, and S.~Bengio, ``Transfusion: {{Understanding
@@ -34,9 +42,9 @@ M.~Raghu, C.~Zhang, J.~Kleinberg, and S.~Bengio, ``Transfusion: {{Understanding
 
 \bibitem{liuSemisupervisedMedicalImage2020}
 Q.~Liu, L.~Yu, L.~Luo, Q.~Dou, and P.~A. Heng, ``Semi-supervised {{Medical
-  Image Classification}} with {{Relation-driven Self-ensembling Model}},''
-  \emph{IEEE Transactions on Medical Imaging}, vol.~39, no.~11, pp. 3429--3440,
-  Nov. 2020.
+  Image Classification}} with {{Relation}}-driven {{Self}}-ensembling
+  {{Model}},'' \emph{IEEE Transactions on Medical Imaging}, vol.~39, no.~11,
+  pp. 3429--3440, Nov. 2020.
 
 \bibitem{chenSimpleFrameworkContrastive2020}
 T.~Chen, S.~Kornblith, M.~Norouzi, and G.~Hinton, ``A {{Simple Framework}} for
@@ -49,11 +57,12 @@ H.~Liu, J.~Z. HaoChen, A.~Gaidon, and T.~Ma, ``Self-supervised {{Learning}} is
   stat]}, Oct. 2021.
 
 \bibitem{norooziUnsupervisedLearningVisual2016}
-M.~Noroozi and P.~Favaro, ``Unsupervised {{Learning}} of {{Visual
-  Representations}} by {{Solving Jigsaw Puzzles}},'' in \emph{Computer
-  {{Vision}} \textendash{} {{ECCV}} 2016}, B.~Leibe, J.~Matas, N.~Sebe, and
-  M.~Welling, Eds.\hskip 1em plus 0.5em minus 0.4em\relax {Cham}: {Springer
-  International Publishing}, 2016, vol. 9910, pp. 69--84.
+M.~Noroozi and P.~Favaro, ``\BIBforeignlanguage{en}{Unsupervised {{Learning}}
+  of {{Visual Representations}} by {{Solving Jigsaw Puzzles}}},'' in
+  \emph{\BIBforeignlanguage{en}{Computer {{Vision}} \textendash{} {{ECCV}}
+  2016}}, B.~Leibe, J.~Matas, N.~Sebe, and M.~Welling, Eds.\hskip 1em plus
+  0.5em minus 0.4em\relax {Cham}: {Springer International Publishing}, 2016,
+  vol. 9910, pp. 69--84.
 
 \bibitem{he2019moco}
 K.~He, H.~Fan, Y.~Wu, S.~Xie, and R.~Girshick, ``Momentum contrast for
@@ -62,13 +71,13 @@ K.~He, H.~Fan, Y.~Wu, S.~Xie, and R.~Girshick, ``Momentum contrast for
 
 \bibitem{baiSelfSupervisedLearningCardiac2019}
 W.~Bai, C.~Chen, G.~Tarroni, J.~Duan, F.~Guitton, S.~E. Petersen, Y.~Guo, P.~M.
-  Matthews, and D.~Rueckert, ``Self-{{Supervised Learning}} for {{Cardiac MR
-  Image Segmentation}} by {{Anatomical Position Prediction}},'' in
-  \emph{Medical {{Image Computing}} and {{Computer Assisted Intervention}}
-  \textendash{} {{MICCAI}} 2019}, D.~Shen, T.~Liu, T.~M. Peters, L.~H. Staib,
-  C.~Essert, S.~Zhou, P.-T. Yap, and A.~Khan, Eds.\hskip 1em plus 0.5em minus
-  0.4em\relax {Cham}: {Springer International Publishing}, 2019, vol. 11765,
-  pp. 541--549.
+  Matthews, and D.~Rueckert, ``\BIBforeignlanguage{en}{Self-{{Supervised
+  Learning}} for {{Cardiac MR Image Segmentation}} by {{Anatomical Position
+  Prediction}}},'' in \emph{\BIBforeignlanguage{en}{Medical {{Image Computing}}
+  and {{Computer Assisted Intervention}} \textendash{} {{MICCAI}} 2019}},
+  D.~Shen, T.~Liu, T.~M. Peters, L.~H. Staib, C.~Essert, S.~Zhou, P.-T. Yap,
+  and A.~Khan, Eds.\hskip 1em plus 0.5em minus 0.4em\relax {Cham}: {Springer
+  International Publishing}, 2019, vol. 11765, pp. 541--549.
 
 \bibitem{ZHU2020101746}
 J.~Zhu, Y.~Li, Y.~Hu, K.~Ma, S.~K. Zhou, and Y.~Zheng, ``Rubik's {{Cube}}+:
@@ -76,11 +85,12 @@ J.~Zhu, Y.~Li, Y.~Hu, K.~Ma, S.~K. Zhou, and Y.~Zheng, ``Rubik's {{Cube}}+:
   analysis,'' \emph{Medical Image Analysis}, vol.~64, p. 101746, 2020.
 
 \bibitem{zhouComparingLearnSurpassing2020}
-H.-Y. Zhou, S.~Yu, C.~Bian, Y.~Hu, K.~Ma, and Y.~Zheng, ``Comparing to
-  {{Learn}}: {{Surpassing ImageNet Pretraining}} on {{Radiographs}} by
-  {{Comparing Image Representations}},'' in \emph{Medical {{Image Computing}}
-  and {{Computer Assisted Intervention}} \textendash{} {{MICCAI}} 2020}, A.~L.
-  Martel, P.~Abolmaesumi, D.~Stoyanov, D.~Mateus, M.~A. Zuluaga, S.~K. Zhou,
+H.-Y. Zhou, S.~Yu, C.~Bian, Y.~Hu, K.~Ma, and Y.~Zheng,
+  ``\BIBforeignlanguage{en}{Comparing to {{Learn}}: {{Surpassing ImageNet
+  Pretraining}} on {{Radiographs}} by {{Comparing Image Representations}}},''
+  in \emph{\BIBforeignlanguage{en}{Medical {{Image Computing}} and {{Computer
+  Assisted Intervention}} \textendash{} {{MICCAI}} 2020}}, A.~L. Martel,
+  P.~Abolmaesumi, D.~Stoyanov, D.~Mateus, M.~A. Zuluaga, S.~K. Zhou,
   D.~Racoceanu, and L.~Joskowicz, Eds.\hskip 1em plus 0.5em minus 0.4em\relax
   {Cham}: {Springer International Publishing}, 2020, vol. 12261, pp. 398--407.
 
@@ -95,21 +105,22 @@ A.~Taleb, W.~Loetzsch, N.~Danz, J.~Severin, T.~Gaertner, B.~Bergner, and
 \bibitem{aziziBigSelfSupervisedModels2021}
 S.~Azizi, B.~Mustafa, F.~Ryan, Z.~Beaver, J.~Freyberg, J.~Deaton, A.~Loh,
   A.~Karthikesalingam, S.~Kornblith, T.~Chen, V.~Natarajan, and M.~Norouzi,
-  ``Big {{Self-Supervised Models Advance Medical Image Classification}},''
+  ``Big {{Self}}-{{Supervised Models Advance Medical Image Classification}},''
   \emph{arXiv:2101.05224 [cs, eess]}, Apr. 2021.
 
 \bibitem{nguyenVinDrCXROpenDataset2021}
 H.~Q. Nguyen, K.~Lam, L.~T. Le, H.~H. Pham, D.~Q. Tran, D.~B. Nguyen, D.~D. Le,
   C.~M. Pham, H.~T.~T. Tong, D.~H. Dinh, C.~D. Do, L.~T. Doan, C.~N. Nguyen,
   B.~T. Nguyen, Q.~V. Nguyen, A.~D. Hoang, H.~N. Phan, A.~T. Nguyen, P.~H. Ho,
-  D.~T. Ngo, N.~T. Nguyen, N.~T. Nguyen, M.~Dao, and V.~Vu, ``{{VinDr-CXR}}:
-  {{An}} open dataset of chest {{X-rays}} with radiologist's annotations,''
-  \emph{arXiv:2012.15029 [eess]}, Jan. 2021.
+  D.~T. Ngo, N.~T. Nguyen, N.~T. Nguyen, M.~Dao, and V.~Vu,
+  ``{{VinDr}}-{{CXR}}: {{An}} open dataset of chest {{X}}-rays with
+  radiologist's annotations,'' \emph{arXiv:2012.15029 [eess]}, Jan. 2021.
 
 \bibitem{solovyevWeightedBoxesFusion2021}
-R.~Solovyev, W.~Wang, and T.~Gabruseva, ``Weighted boxes fusion: {{Ensembling}}
-  boxes from different object detection models,'' \emph{Image and Vision
-  Computing}, vol. 107, p. 104117, Mar. 2021.
+R.~Solovyev, W.~Wang, and T.~Gabruseva, ``\BIBforeignlanguage{en}{Weighted
+  boxes fusion: {{Ensembling}} boxes from different object detection models},''
+  \emph{\BIBforeignlanguage{en}{Image and Vision Computing}}, vol. 107, p.
+  104117, Mar. 2021.
 
 \bibitem{gupta2019lvis}
 A.~Gupta, P.~Dollar, and R.~Girshick, ``{{LVIS}}: {{A}} dataset for large
@@ -117,7 +128,7 @@ A.~Gupta, P.~Dollar, and R.~Girshick, ``{{LVIS}}: {{A}} dataset for large
   Conference on Computer Vision and Pattern Recognition}, 2019.
 
 \bibitem{DBLP:conf/nips/RenHGS15}
-S.~Ren, K.~He, R.~B. Girshick, and J.~Sun, ``Faster {{R-CNN}}: {{Towards}}
+S.~Ren, K.~He, R.~B. Girshick, and J.~Sun, ``Faster {{R}}-{{CNN}}: {{Towards}}
   real-time object detection with region proposal networks,'' in \emph{Advances
   in Neural Information Processing Systems 28: {{Annual}} Conference on Neural
   Information Processing Systems 2015, December 7-12, 2015, Montreal, Quebec,
@@ -128,5 +139,16 @@ S.~Ren, K.~He, R.~B. Girshick, and J.~Sun, ``Faster {{R-CNN}}: {{Towards}}
 K.~He, X.~Zhang, S.~Ren, and J.~Sun, ``Deep residual learning for image
   recognition,'' in \emph{Proceedings of the {{IEEE}} Conference on Computer
   Vision and Pattern Recognition ({{CVPR}})}, Jun. 2016.
+
+\bibitem{loshchilovSGDRStochasticGradient2017}
+I.~Loshchilov and F.~Hutter, ``{{SGDR}}: {{Stochastic Gradient Descent}} with
+  {{Warm Restarts}},'' \emph{arXiv:1608.03983 [cs, math]}, May 2017.
+
+\bibitem{kisantalAugmentationSmallObject2019}
+M.~Kisantal, Z.~Wojna, J.~Murawski, J.~Naruniec, and K.~Cho, ``Augmentation for
+  small object detection,'' in \emph{9th {{International Conference}} on
+  {{Advances}} in {{Computing}} and {{Information Technology}} ({{ACITY}}
+  2019)}.\hskip 1em plus 0.5em minus 0.4em\relax {Aircc Publishing
+  Corporation}, Dec. 2019, pp. 119--133.
 
 \end{thebibliography}

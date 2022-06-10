@@ -1,70 +1,91 @@
 \relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
 \bibstyle{IEEEtran}
 \citation{litjensSurveyDeepLearning2017}
+\citation{luoIntelligentSolutionsChest2021}
 \citation{raghuTransfusionUnderstandingTransfer2019}
 \citation{liuSemisupervisedMedicalImage2020}
 \citation{chenSimpleFrameworkContrastive2020}
 \citation{liuSelfsupervisedLearningMore2021}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-A}}Related work}{1}{subsection.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {I-A}1}Improving data efficiency of neural nets}{1}{subsubsection.1.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {I-A}2}Self-supervised learning}{1}{subsubsection.1.1.2}\protected@file@percent }
 \citation{norooziUnsupervisedLearningVisual2016}
 \citation{chenSimpleFrameworkContrastive2020}
 \citation{he2019moco}
-\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {I-A}}Related work}{1}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {I-A}1}Self-supervised learning}{1}{}\protected@file@percent }
-\citation{baiSelfSupervisedLearningCardiac2019}
-\citation{ZHU2020101746}
+\citation{baiSelfSupervisedLearningCardiac2019,ZHU2020101746}
 \citation{zhouComparingLearnSurpassing2020}
 \citation{NEURIPS2020_d2dc6368}
 \citation{aziziBigSelfSupervisedModels2021}
 \citation{nguyenVinDrCXROpenDataset2021}
 \citation{solovyevWeightedBoxesFusion2021}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {I-A}2}Self-supervised learning in medical images}{2}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {II}Dataset description and demographics}{2}{}\protected@file@percent }
-\newlabel{dataset}{{II}{2}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Data preparation}{2}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Examples of bounding box averaging. The images on the left show the original bounding boxes, while the images on the right show fused bounding boxes which are used in our experiments.}}{2}{}\protected@file@percent }
-\newlabel{fig:wbf}{{1}{2}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {\mbox  {I-A}3}Self-supervised learning in medical images}{2}{subsubsection.1.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {II}Dataset description and demographics}{2}{section.2}\protected@file@percent }
+\newlabel{dataset}{{II}{2}{Dataset description and demographics}{section.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {II-A}}Data preparation}{2}{subsection.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Examples of bounding box averaging. The images on the left show the original bounding boxes, while the images on the right show fused bounding boxes which are used in our experiments.}}{2}{figure.1}\protected@file@percent }
+\newlabel{fig:wbf}{{1}{2}{Examples of bounding box averaging. The images on the left show the original bounding boxes, while the images on the right show fused bounding boxes which are used in our experiments}{figure.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Methods}{2}{section.3}\protected@file@percent }
 \citation{gupta2019lvis}
 \citation{DBLP:conf/nips/RenHGS15}
 \citation{He_2016_CVPR}
 \citation{chenSimpleFrameworkContrastive2020}
-\@writefile{toc}{\contentsline {section}{\numberline {III}Methods}{3}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces A summary of our experiments. A percentage of the training dataset is moved to the pre-training dataset and models are pre-trained using the pre-training datasets and then fine tuned with the rest of the training data. The pre-training datasets are unlabeled. A separate baseline model is trained using the full labeled dataset.}}{3}{}\protected@file@percent }
-\newlabel{fig:dataset-split-summary}{{2}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Balancing the dataset}{3}{}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces A histogram of the class balance of the original dataset (by number of images containing the class), and the same histogram for our oversampled dataset.}}{3}{}\protected@file@percent }
-\newlabel{fig:class-balance}{{3}{3}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Baseline model details}{3}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Pretraining model details}{3}{}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {IV}Results}{4}{}\protected@file@percent }
-\newlabel{sec2}{{IV}{4}}
-\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces A summary of the results of our experiments. mAP is the mean average precision at IoU values from 0.5 tp 0.95 at 0.05 (mAP@[.5, .95]) increments across all classes, the standard metric for the COCO benchmark. mAP50 is the mAP at IoU = 50\% (mAP@0.5), the standard metric for the PASCAL VOC benchmark. mAP small is the mAP@[.5, .95] for objects with an area smaller than 32 pixels$^2$. AR is the average recall given 100 detections per image (AR@100). AR small is the same as AR but only for objects with an area smaller than 32 pixels$^2$. Training images is the total number of labeled training examples available to the model.}}{4}{}\protected@file@percent }
-\newlabel{tab:results}{{I}{4}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces The mean average precision (mAP@[.5, .95] across different percentages of labeled data for different classes in the dataset. The model at 100\% of labeled data is the baseline model.}}{4}{}\protected@file@percent }
-\newlabel{fig:classwise-map}{{4}{4}}
+\citation{loshchilovSGDRStochasticGradient2017}
+\citation{chenSimpleFrameworkContrastive2020}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces A summary of our approach. A percentage of the training dataset is moved to the pretraining dataset and used to pretrain the model, which is then fine-tuned with the rest of the training data. The pretraining datasets are unlabeled. A separate baseline model is trained using the full labeled dataset.}}{3}{figure.2}\protected@file@percent }
+\newlabel{fig:dataset-split-summary}{{2}{3}{A summary of our approach. A percentage of the training dataset is moved to the pretraining dataset and used to pretrain the model, which is then fine-tuned with the rest of the training data. The pretraining datasets are unlabeled. A separate baseline model is trained using the full labeled dataset}{figure.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-A}}Balancing the dataset}{3}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-B}}Baseline model details}{3}{subsection.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces A histogram of the class balance of the original dataset (by number of images containing the class), and the histogram of the oversampled dataset used for training.}}{3}{figure.3}\protected@file@percent }
+\newlabel{fig:class-balance}{{3}{3}{A histogram of the class balance of the original dataset (by number of images containing the class), and the histogram of the oversampled dataset used for training}{figure.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\mbox  {III-C}}Pretraining model details}{3}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Results}{3}{section.4}\protected@file@percent }
+\newlabel{sec2}{{IV}{3}{Results}{section.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces A summary of the results of our experiments. The details of the metrics are described in \ref  {sec2}. Training images is the total number of labeled training examples available to the model.}}{4}{table.1}\protected@file@percent }
+\newlabel{tab:results}{{I}{4}{A summary of the results of our experiments. The details of the metrics are described in \ref {sec2}. Training images is the total number of labeled training examples available to the model}{table.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces The mean average precision (mAP@[.5, .95]) across different percentages of labeled data for different classes in the dataset. The model at 100\% of labeled data is the baseline model.}}{4}{figure.4}\protected@file@percent }
+\newlabel{fig:classwise-map}{{4}{4}{The mean average precision (mAP@[.5, .95]) across different percentages of labeled data for different classes in the dataset. The model at 100\% of labeled data is the baseline model}{figure.4}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces The inter-observer IoU between radiologist $R9$ and radiologists $R10$ and $R11$, as well as the mean IoU of the model's predictions.}}{4}{table.2}\protected@file@percent }
+\newlabel{tab:iou}{{II}{4}{The inter-observer IoU between radiologist $R9$ and radiologists $R10$ and $R11$, as well as the mean IoU of the model's predictions}{table.2}{}}
+\citation{kisantalAugmentationSmallObject2019}
 \bibdata{bibfile.bib}
 \bibcite{litjensSurveyDeepLearning2017}{1}
-\bibcite{raghuTransfusionUnderstandingTransfer2019}{2}
-\bibcite{liuSemisupervisedMedicalImage2020}{3}
-\bibcite{chenSimpleFrameworkContrastive2020}{4}
-\bibcite{liuSelfsupervisedLearningMore2021}{5}
-\bibcite{norooziUnsupervisedLearningVisual2016}{6}
-\bibcite{he2019moco}{7}
-\bibcite{baiSelfSupervisedLearningCardiac2019}{8}
-\bibcite{ZHU2020101746}{9}
-\bibcite{zhouComparingLearnSurpassing2020}{10}
-\bibcite{NEURIPS2020_d2dc6368}{11}
-\bibcite{aziziBigSelfSupervisedModels2021}{12}
-\bibcite{nguyenVinDrCXROpenDataset2021}{13}
-\bibcite{solovyevWeightedBoxesFusion2021}{14}
-\bibcite{gupta2019lvis}{15}
-\bibcite{DBLP:conf/nips/RenHGS15}{16}
-\bibcite{He_2016_CVPR}{17}
-\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces The inter-observer IoU between radiologist $R9$ and radiologists $R10$ and $R11$, as well as the mean IoU of the model's predictions, when taking the prediction with the highest overlap with fused ground truth annotations.}}{5}{}\protected@file@percent }
-\newlabel{tab:iou}{{II}{5}}
-\@writefile{toc}{\contentsline {section}{\numberline {V}Discussion}{5}{}\protected@file@percent }
-\newlabel{sec12}{{V}{5}}
-\@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusion}{5}{}\protected@file@percent }
-\newlabel{sec13}{{VI}{5}}
-\@writefile{toc}{\contentsline {section}{References}{5}{}\protected@file@percent }
-\gdef \@abspage@last{5}
+\bibcite{luoIntelligentSolutionsChest2021}{2}
+\bibcite{raghuTransfusionUnderstandingTransfer2019}{3}
+\bibcite{liuSemisupervisedMedicalImage2020}{4}
+\bibcite{chenSimpleFrameworkContrastive2020}{5}
+\bibcite{liuSelfsupervisedLearningMore2021}{6}
+\bibcite{norooziUnsupervisedLearningVisual2016}{7}
+\bibcite{he2019moco}{8}
+\bibcite{baiSelfSupervisedLearningCardiac2019}{9}
+\bibcite{ZHU2020101746}{10}
+\bibcite{zhouComparingLearnSurpassing2020}{11}
+\bibcite{NEURIPS2020_d2dc6368}{12}
+\bibcite{aziziBigSelfSupervisedModels2021}{13}
+\bibcite{nguyenVinDrCXROpenDataset2021}{14}
+\bibcite{solovyevWeightedBoxesFusion2021}{15}
+\bibcite{gupta2019lvis}{16}
+\bibcite{DBLP:conf/nips/RenHGS15}{17}
+\bibcite{He_2016_CVPR}{18}
+\bibcite{loshchilovSGDRStochasticGradient2017}{19}
+\bibcite{kisantalAugmentationSmallObject2019}{20}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Discussion and conclusion}{5}{section.5}\protected@file@percent }
+\newlabel{sec12}{{V}{5}{Discussion and conclusion}{section.5}{}}
+\@writefile{toc}{\contentsline {section}{References}{5}{section*.1}\protected@file@percent }

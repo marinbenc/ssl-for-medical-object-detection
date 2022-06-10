@@ -15,14 +15,14 @@ Database file #1: ../bibfile.bib
 Done.
 You've used 20 entries,
             4087 wiz_defined-function locations,
-            954 strings with 14087 characters,
-and the built_in function-call counts, 17188 in all, are:
+            955 strings with 14109 characters,
+and the built_in function-call counts, 17236 in all, are:
 = -- 1220
 > -- 706
 < -- 90
 + -- 356
 - -- 159
-* -- 884
+* -- 932
 := -- 2424
 add.period$ -- 45
 call.type$ -- 20
@@ -42,10 +42,10 @@ pop$ -- 711
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 2
-skip$ -- 1236
+skip$ -- 1224
 stack$ -- 0
 substring$ -- 542
-swap$ -- 1007
+swap$ -- 1019
 text.length$ -- 21
 text.prefix$ -- 0
 top$ -- 5

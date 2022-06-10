@@ -211,9 +211,9 @@ training set in the unlabeled pre-train dataset, in increments of 10\%.
 
 \subsection{Balancing the dataset}
 
-As shown in Fig. \ref{fig:class-balance}, the dataset is highly imbalanced. To improve class balance during training we oversample examples with less-
-represented classes. We use the oversampling approach described in \cite{gupta2019lvis}, with an oversampling threshold of 0.4. This balancing is performed 
-online during training and only on the training set. We found that balancing the dataset in this way significantly improved the mean average precision when 
+As shown in Fig. \ref{fig:class-balance}, the dataset is highly imbalanced. To improve class balance during training we use augmentation to oversample examples with less-
+represented classes. We use the oversampling approach described in \cite{gupta2019lvis} with an oversampling threshold of 0.4. This balancing is performed 
+online during pre-training and fine-tuning and only on the training set. We found that this approach significantly improved the mean average precision when 
 averaged across all classes.
 
 \begin{figure}[t]
